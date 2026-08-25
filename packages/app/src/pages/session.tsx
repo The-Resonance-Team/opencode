@@ -35,6 +35,7 @@ import { Tabs } from "@opencode-ai/ui/tabs"
 import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
 import { createAutoScroll } from "@opencode-ai/ui/hooks"
 import { previewSelectedLines } from "@opencode-ai/session-ui/pierre/selection-bridge"
+import { DocumentPreview } from "@opencode-ai/session-ui/document-preview"
 import { Button } from "@opencode-ai/ui/button"
 import { showToast } from "@/utils/toast"
 import { base64Encode, checksum } from "@opencode-ai/core/util/encode"
@@ -1911,6 +1912,34 @@ export default function Page() {
     }
     const path = file.filename ?? ""
     const absolute = path.startsWith("/") || path.startsWith("\\\\") || /^[a-zA-Z]:[\\/]/.test(path)
+    const kind =
+      file.mime === "application/pdf"
+        ? "pdf"
+        : file.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ? "docx"
+          : null
+    if (kind) {
+      dialog.show(() => (
+        <DocumentPreview
+          filename={getFilename(file.filename) || "attachment"}
+          kind={kind}
+          url={file.url}
+          actions={
+            <>
+              <Show when={platform.openInApp && absolute}>
+                <Button variant="ghost" onClick={() => void platform.openInApp?.(path)}>
+                  {language.t("session.attachment.openInApp")}
+                </Button>
+              </Show>
+              <Button variant="primary" onClick={download}>
+                {language.t("session.attachment.download")}
+              </Button>
+            </>
+          }
+        />
+      ))
+      return
+    }
     if (platform.revealPath && absolute) {
       void platform.revealPath(path).then(
         (revealed) => {
