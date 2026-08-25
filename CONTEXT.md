@@ -85,6 +85,10 @@ _Avoid_: Local implementation
 A bounded ordered result containing `items` and opaque `previous` and `next` cursor links for navigating the same query in either direction.
 _Avoid_: Response envelope
 
+**Document Preview**:
+The desktop in-app surface that renders a document attachment or plugin-managed file — PDF natively, office drafts as markdown, real office files rendered — with comment overlay and draft editing.
+_Avoid_: File preview, Office preview, the office plugin's agent-facing `preview` action
+
 ## Relationships
 
 - A **System Context** is an opaque carrier composed from zero or more **Context Sources**.
