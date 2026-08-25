@@ -69,7 +69,8 @@ export async function listPlugins(fetcher: typeof globalThis.fetch = globalThis.
   const base = requireConnection()
   const res = await fetcher(`${base.url}/api/plugin`, { headers: authHeaders(base) })
   if (!res.ok) throw await requestError(res, `GET /api/plugin failed: ${res.status}`)
-  return res.json()
+  const body: unknown = await res.json()
+  return isRecord(body) && Array.isArray(body.data) ? (body.data as PluginEntry[]) : []
 }
 
 export async function pluginInvoke<T = unknown>(
@@ -87,5 +88,7 @@ export async function pluginInvoke<T = unknown>(
   })
   if (!res.ok) throw await requestError(res, `POST ${path} failed: ${res.status}`)
   if (res.status === 204) return undefined
-  return res.json()
+  const body: unknown = await res.json()
+  // ponytail: v2 httpapi wraps success payloads in { data } / { result }; raw body if unwrapped
+  return isRecord(body) && "result" in body ? (body.result as T) : (body as T)
 }

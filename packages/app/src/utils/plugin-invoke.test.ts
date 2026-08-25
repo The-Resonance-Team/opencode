@@ -19,10 +19,12 @@ describe("plugin-invoke", () => {
     const { fetch, seen } = fakeFetch(
       () =>
         new Response(
-          JSON.stringify([
-            { id: "office-preview", invokes: ["office.preview"] },
-            { id: "other", invokes: [] },
-          ]),
+          JSON.stringify({
+            data: [
+              { id: "office-preview", invokes: ["office.preview"] },
+              { id: "other", invokes: [] },
+            ],
+          }),
           { headers: { "content-type": "application/json" } },
         ),
     )
@@ -41,7 +43,7 @@ describe("plugin-invoke", () => {
   })
 
   test("listPlugins sends Basic auth when credentials are set", async () => {
-    const { fetch, seen } = fakeFetch(() => new Response(JSON.stringify([])))
+    const { fetch, seen } = fakeFetch(() => new Response(JSON.stringify({ data: [] })))
     setPluginServer({ url: "http://localhost:4096", username: "user", password: "secret" })
     try {
       await listPlugins(fetch)
@@ -81,11 +83,13 @@ describe("plugin-invoke", () => {
       () =>
         new Response(
           JSON.stringify({
-            managed: true,
-            source: "draft",
-            filename: "a.docx",
-            contentType: "markdown",
-            comments: [],
+            result: {
+              managed: true,
+              source: "draft",
+              filename: "a.docx",
+              contentType: "markdown",
+              comments: [],
+            },
           }),
           { headers: { "content-type": "application/json" } },
         ),
