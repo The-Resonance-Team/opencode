@@ -71,7 +71,7 @@ export function DocumentPreview(props: DocumentPreviewProps) {
   )
 }
 
-function DocumentBody(props: { kind: DocumentKind; url: string; filename: string }) {
+export function DocumentBody(props: { kind: DocumentKind; url: string; filename: string }) {
   if (props.kind === "pdf") return <PdfBody url={props.url} />
   if (props.kind === "docx") return <DocxBody url={props.url} />
   if (props.kind === "markdown") return <MarkdownBody url={props.url} />

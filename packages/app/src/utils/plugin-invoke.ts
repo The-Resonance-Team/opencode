@@ -1,28 +1,9 @@
 import type { ServerConnection } from "@/context/server"
 import { authTokenFromCredentials } from "./server"
 
+export type { OfficeComment, OfficePreviewResult } from "@opencode-ai/session-ui/office-preview"
+
 export type PluginEntry = { id: string; invokes: string[] }
-
-export type OfficeComment = {
-  id: string
-  author: string
-  text: string
-  status: "open" | "resolved" | "denied"
-  suggestedText?: string
-  anchor?: string
-  createdAt: number
-}
-
-export type OfficePreviewResult = {
-  managed: boolean
-  source: "draft" | "file"
-  filename: string
-  contentType: "markdown"
-  content?: string
-  fileUrl?: string
-  comments: OfficeComment[]
-  lock?: { sessionID: string; owner: string; stale: boolean }
-}
 
 // ponytail: the active server connection only lives in the Solid Server context,
 // which plain functions cannot read; the session page keeps this in sync.
