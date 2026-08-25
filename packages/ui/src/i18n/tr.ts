@@ -50,6 +50,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "{{path}} ikili dosyadır.",
   "ui.fileMedia.binary.description.default": "İkili içerik",
 
+  "ui.documentPreview.fallback": "Bu dosya türü için uygulama içi önizleme yok.",
+
   "ui.lineComment.label.prefix": "Yorum: ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Yorum yapılıyor: ",

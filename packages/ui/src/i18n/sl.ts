@@ -44,6 +44,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Binarna datoteka",
   "ui.fileMedia.binary.description.path": "{{path}} je binaren.",
   "ui.fileMedia.binary.description.default": "Binarna vsebina",
+
+  "ui.documentPreview.fallback": "Za to vrsto datoteke v aplikaciji ni predogleda.",
   "ui.lineComment.label.prefix": "Komentiraj ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Komentiranje ",

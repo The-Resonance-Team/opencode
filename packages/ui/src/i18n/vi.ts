@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Tệp nhị phân",
   "ui.fileMedia.binary.description.path": "{{path}} là nhị phân.",
   "ui.fileMedia.binary.description.default": "Nội dung nhị phân",
+
+  "ui.documentPreview.fallback": "Không có xem trước trong ứng dụng cho loại tệp này.",
   "ui.lineComment.label.prefix": "Bình luận về ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Bình luận về ",

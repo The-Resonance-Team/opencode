@@ -48,6 +48,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "無法顯示 {{path}}，因為它是二進位檔案。",
   "ui.fileMedia.binary.description.default": "無法顯示此檔案，因為它是二進位檔案。",
 
+  "ui.documentPreview.fallback": "此檔案類型無應用程式內預覽。",
+
   "ui.lineComment.label.prefix": "留言於 ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "正在留言於 ",

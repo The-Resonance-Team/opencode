@@ -43,6 +43,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Двоичен файл",
   "ui.fileMedia.binary.description.path": "{{path}} е двоичен.",
   "ui.fileMedia.binary.description.default": "Двоично съдържание",
+
+  "ui.documentPreview.fallback": "Няма предпросмотр в приложението за този тип файлове.",
   "ui.lineComment.label.prefix": "Коментирайте",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Коментиране на",

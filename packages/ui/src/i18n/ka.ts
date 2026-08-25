@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "ორობითი ფაილი",
   "ui.fileMedia.binary.description.path": "{{path}} არის ორობითი.",
   "ui.fileMedia.binary.description.default": "ორობითი შინაარსი",
+
+  "ui.documentPreview.fallback": "ამ ფაილის ტიპისთვის აპლიკაციაში წინასწარი ნახვა არ არის.",
   "ui.lineComment.label.prefix": "კომენტარი ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "კომენტირება ",

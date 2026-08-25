@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "فایل باینری",
   "ui.fileMedia.binary.description.path": "{{path}} باینری است.",
   "ui.fileMedia.binary.description.default": "محتوای باینری",
+
+  "ui.documentPreview.fallback": "پیش‌نمایشی برای این نوع فایل در برنامه وجود ندارد.",
   "ui.lineComment.label.prefix": "نظر دهید ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "در حال اظهار نظر ",

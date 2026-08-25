@@ -43,6 +43,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "ໄຟລ໌ຖານສອງ",
   "ui.fileMedia.binary.description.path": "{{path}} ເປັນໄບນາຣີ.",
   "ui.fileMedia.binary.description.default": "ເນື້ອໃນຖານສອງ",
+
+  "ui.documentPreview.fallback": "ບໍ່ມີການບອກສະເໜີໃນແອັບສຳລັບຊະນິດຟາይລ໌ນີ້",
   "ui.lineComment.label.prefix": "ຄໍາເຫັນກ່ຽວກັບ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "ຄໍາເຫັນກ່ຽວກັບ",

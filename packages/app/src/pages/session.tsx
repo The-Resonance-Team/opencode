@@ -37,6 +37,8 @@ import { createAutoScroll } from "@opencode-ai/ui/hooks"
 import { previewSelectedLines } from "@opencode-ai/session-ui/pierre/selection-bridge"
 import { DocumentPreview } from "@opencode-ai/session-ui/document-preview"
 import { Button } from "@opencode-ai/ui/button"
+import { listPlugins, pluginInvoke, setPluginServer, type OfficePreviewResult } from "@/utils/plugin-invoke"
+import { Markdown } from "@opencode-ai/session-ui/markdown"
 import { showToast } from "@/utils/toast"
 import { base64Encode, checksum } from "@opencode-ai/core/util/encode"
 import { useLocation, useNavigate, useParams, useSearchParams } from "@solidjs/router"
@@ -108,6 +110,12 @@ import { createSessionLineage } from "./session/session-lineage"
 type FollowupItem = FollowupDraft & { id: string }
 type FollowupEdit = Pick<FollowupItem, "id" | "prompt" | "context">
 const emptyFollowups: FollowupItem[] = []
+
+const OFFICE_MIMES: string[] = [
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+]
 
 type ChangeMode = "git" | "branch" | "turn"
 type VcsMode = "git" | "branch"
@@ -362,6 +370,8 @@ export default function Page() {
   const language = useLanguage()
   const sdk = useSDK()
   const serverSDK = useServerSDK()
+  const server = useServer()
+  createEffect(() => setPluginServer(server.current?.http))
   const settings = useSettings()
   const platform = usePlatform()
   const prompt = usePrompt()
@@ -1912,44 +1922,68 @@ export default function Page() {
     }
     const path = file.filename ?? ""
     const absolute = path.startsWith("/") || path.startsWith("\\\\") || /^[a-zA-Z]:[\\/]/.test(path)
+    const filename = getFilename(file.filename) || "attachment"
     const kind =
       file.mime === "application/pdf"
         ? "pdf"
         : file.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           ? "docx"
           : null
-    if (kind) {
-      dialog.show(() => (
-        <DocumentPreview
-          filename={getFilename(file.filename) || "attachment"}
-          kind={kind}
-          url={file.url}
-          actions={
-            <>
-              <Show when={platform.openInApp && absolute}>
-                <Button variant="ghost" onClick={() => void platform.openInApp?.(path)}>
-                  {language.t("session.attachment.openInApp")}
-                </Button>
-              </Show>
-              <Button variant="primary" onClick={download}>
-                {language.t("session.attachment.download")}
-              </Button>
-            </>
-          }
-        />
-      ))
+    const actions = (
+      <>
+        <Show when={platform.openInApp && absolute}>
+          <Button variant="ghost" onClick={() => void platform.openInApp?.(path)}>
+            {language.t("session.attachment.openInApp")}
+          </Button>
+        </Show>
+        <Button variant="primary" onClick={download}>
+          {language.t("session.attachment.download")}
+        </Button>
+      </>
+    )
+    const openPreview = () => {
+      if (kind) {
+        dialog.show(() => <DocumentPreview filename={filename} kind={kind} url={file.url} actions={actions} />)
+        return
+      }
+      if (platform.revealPath && absolute) {
+        void platform.revealPath(path).then(
+          (revealed) => {
+            if (!revealed) download()
+          },
+          () => download(),
+        )
+        return
+      }
+      download()
+    }
+    const sessionID = params.id
+    if (!OFFICE_MIMES.includes(file.mime) || !absolute || !sessionID) {
+      openPreview()
       return
     }
-    if (platform.revealPath && absolute) {
-      void platform.revealPath(path).then(
-        (revealed) => {
-          if (!revealed) download()
-        },
-        () => download(),
-      )
-      return
-    }
-    download()
+    // ponytail: detection is silent; any failure (plugin absent, HTTP error, timeout) falls back to the built-in preview
+    void (async () => {
+      let result: OfficePreviewResult | undefined
+      try {
+        const plugins = await listPlugins()
+        const plugin = plugins.find((entry) => entry.invokes.includes("office.preview"))
+        if (plugin)
+          result = await pluginInvoke<OfficePreviewResult>(plugin.id, "office.preview", { filePath: path, sessionID })
+      } catch {
+        // detection failed; fall through to the built-in preview
+      }
+      if (result?.managed) {
+        dialog.show(() => (
+          <DocumentPreview filename={result.filename || filename} kind="markdown" url={file.url} actions={actions}>
+            {/* ponytail: T6 replaces this with the OfficePreview shell */}
+            <Markdown text={result.content ?? ""} class="h-full w-full overflow-auto p-4" />
+          </DocumentPreview>
+        ))
+        return
+      }
+      openPreview()
+    })()
   }
 
   const actions = { revert, openAttachment }

@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Binair bestand",
   "ui.fileMedia.binary.description.path": "{{path}} is binair.",
   "ui.fileMedia.binary.description.default": "Binaire inhoud",
+
+  "ui.documentPreview.fallback": "Geen voorvertoning in de app voor dit bestandstype.",
   "ui.lineComment.label.prefix": "Opmerking bij ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Opmerking bij ",

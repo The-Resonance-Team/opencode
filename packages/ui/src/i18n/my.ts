@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Binary ဖိုင်",
   "ui.fileMedia.binary.description.path": "{{path}} သည် ဒွိစုံဖြစ်သည်။",
   "ui.fileMedia.binary.description.default": "Binary အကြောင်းအရာ",
+
+  "ui.documentPreview.fallback": "ဤဖိုင်အမျိုးအစားအတွက် အက်ပ်အတွင်း မှီကြည့်ရန်မရှိပါ။",
   "ui.lineComment.label.prefix": "မှတ်ချက်",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "မှတ်ချက်ပေးခြင်း",

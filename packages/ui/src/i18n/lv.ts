@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Binārs fails",
   "ui.fileMedia.binary.description.path": "{{path}} ir binārs fails.",
   "ui.fileMedia.binary.description.default": "Binārs saturs",
+
+  "ui.documentPreview.fallback": "Šim faila tipam nav priekšskata lietotnē.",
   "ui.lineComment.label.prefix": "Komentēt",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Komentē",

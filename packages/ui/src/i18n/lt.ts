@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Dvejetainis failas",
   "ui.fileMedia.binary.description.path": "{{path}} yra dvejetainis.",
   "ui.fileMedia.binary.description.default": "Dvejetainis turinys",
+
+  "ui.documentPreview.fallback": "Šiam failo tipui nėra programos peržiūros.",
   "ui.lineComment.label.prefix": "Komentuoti",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Komentuodamas",

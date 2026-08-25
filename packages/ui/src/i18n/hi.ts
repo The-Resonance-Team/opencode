@@ -44,6 +44,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "बाइनरी फ़ाइल",
   "ui.fileMedia.binary.description.path": "{{path}} बाइनरी है।",
   "ui.fileMedia.binary.description.default": "बाइनरी सामग्री",
+
+  "ui.documentPreview.fallback": "इस फ़ाइल प्रकार के लिए ऐप में प्रीव्यू उपलब्ध नहीं है।",
   "ui.lineComment.label.prefix": "इस पर टिप्पणी: ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "इस पर टिप्पणी की जा रही है: ",

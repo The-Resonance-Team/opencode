@@ -46,6 +46,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.path": "Неможливо відобразити {{path}}, оскільки це двійковий файл.",
   "ui.fileMedia.binary.description.default": "Неможливо відобразити цей файл, оскільки він двійковий.",
 
+  "ui.documentPreview.fallback": "Для цього типу файлів немає попереднього перегляду в застосунку.",
+
   "ui.lineComment.label.prefix": "Коментар до ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Коментування: ",

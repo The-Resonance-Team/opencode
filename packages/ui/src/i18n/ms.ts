@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Fail binari",
   "ui.fileMedia.binary.description.path": "{{path}} ialah fail binari.",
   "ui.fileMedia.binary.description.default": "Kandungan binari",
+
+  "ui.documentPreview.fallback": "Tiada pratonton dalam aplikasi untuk jenis fail ini.",
   "ui.lineComment.label.prefix": "Komen pada",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Sedang mengulas pada",

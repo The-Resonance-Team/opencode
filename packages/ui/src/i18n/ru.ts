@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Двоичный файл",
   "ui.fileMedia.binary.description.path": "Невозможно отобразить {{path}}, так как это двоичный файл.",
   "ui.fileMedia.binary.description.default": "Невозможно отобразить этот файл, так как он двоичный.",
+
+  "ui.documentPreview.fallback": "Нет встроенного предпросмотра для этого типа файлов.",
   "ui.lineComment.label.prefix": "Комментарий к ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Комментирование: ",

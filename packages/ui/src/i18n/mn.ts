@@ -43,6 +43,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Хоёртын файл",
   "ui.fileMedia.binary.description.path": "{{path}} нь хоёртын систем юм.",
   "ui.fileMedia.binary.description.default": "Хоёртын агуулга",
+
+  "ui.documentPreview.fallback": "Апп дотор энэ файлын төрлийн өмнөх хараал байхгүй.",
   "ui.lineComment.label.prefix": "Сэтгэгдэл бичих",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Сэтгэгдэл бичиж байна",

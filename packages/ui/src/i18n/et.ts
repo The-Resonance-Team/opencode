@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Binaarne fail",
   "ui.fileMedia.binary.description.path": "{{path}} on binaarne.",
   "ui.fileMedia.binary.description.default": "Binaarne sisu",
+
+  "ui.documentPreview.fallback": "Selle failitüübi jaoks pole rakenduses eelvaadet.",
   "ui.lineComment.label.prefix": "kommenteerida ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Kommenteerides ",

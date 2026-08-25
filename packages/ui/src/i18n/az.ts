@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "İkili fayl",
   "ui.fileMedia.binary.description.path": "{{path}} ikili fayldır.",
   "ui.fileMedia.binary.description.default": "İkili məzmun",
+
+  "ui.documentPreview.fallback": "Bu fayl növü üçün tətbiq daxilində önizləmə yoxdur.",
   "ui.lineComment.label.prefix": "Şərh: ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Şərh yazılır: ",

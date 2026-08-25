@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Binární soubor",
   "ui.fileMedia.binary.description.path": "{{path}} je binární.",
   "ui.fileMedia.binary.description.default": "Binární obsah",
+
+  "ui.documentPreview.fallback": "Tento typ souboru nemá náhled v aplikaci.",
   "ui.lineComment.label.prefix": "Komentář k ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Komentování ",

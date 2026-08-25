@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "ද්විමය ගොනුව",
   "ui.fileMedia.binary.description.path": "{{path}} ද්විමය වේ.",
   "ui.fileMedia.binary.description.default": "ද්විමය අන්තර්ගතය",
+
+  "ui.documentPreview.fallback": "මෙම ගොනු වර්ගය සඳහා යෙදුම තුළ පෙරදර්ශනයක් නැත.",
   "ui.lineComment.label.prefix": "අදහස් දක්වන්න",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "අදහස් දක්වමින්",
