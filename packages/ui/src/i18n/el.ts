@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Δυαδικό αρχείο",
   "ui.fileMedia.binary.description.path": "{{path}} είναι δυαδικό.",
   "ui.fileMedia.binary.description.default": "Δυαδικό περιεχόμενο",
+
+  "ui.documentPreview.fallback": "Δεν υπάρχει προεπισκόπηση στην εφαρμογή για αυτόν τον τύπο αρχείου.",
   "ui.lineComment.label.prefix": "Σχόλιο ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Σχολιασμός ",

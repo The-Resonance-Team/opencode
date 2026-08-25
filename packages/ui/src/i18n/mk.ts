@@ -43,6 +43,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Бинарна датотека",
   "ui.fileMedia.binary.description.path": "{{path}} е бинарен.",
   "ui.fileMedia.binary.description.default": "Бинарна содржина",
+
+  "ui.documentPreview.fallback": "Нема приказ на претходен поглед во апликацијата за овој тип на датотека.",
   "ui.lineComment.label.prefix": "Коментар на",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Коментирајќи на",

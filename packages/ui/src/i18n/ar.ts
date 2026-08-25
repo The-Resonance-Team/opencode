@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "{{path}} عبارة عن ملف ثنائي ولا يمكن عرضه.",
   "ui.fileMedia.binary.description.default": "هذا ملف ثنائي ولا يمكن عرضه.",
 
+  "ui.documentPreview.fallback": "لا يوجد معاينة داخل التطبيق لهذا النوع من الملفات.",
+
   "ui.lineComment.label.prefix": "تعليق على ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "جارٍ التعليق على ",

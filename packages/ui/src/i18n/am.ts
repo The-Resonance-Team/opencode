@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "ሁለትዮሽ ፋይል",
   "ui.fileMedia.binary.description.path": "{{path}} ሁለትዮሽ ነው።",
   "ui.fileMedia.binary.description.default": "ሁለትዮሽ ይዘት",
+
+  "ui.documentPreview.fallback": "ይህ የፋይል አይነት በመተግበሪያው ውስጥ የማጣቀሻ አገልግላታ የለውም።",
   "ui.lineComment.label.prefix": "አስተያየት በ ላይ ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "በላይ አስተያየት መስጠት ",

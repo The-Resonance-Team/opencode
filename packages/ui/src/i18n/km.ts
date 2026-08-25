@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "ឯកសារគោលពីរ",
   "ui.fileMedia.binary.description.path": "{{path}} គឺជាប្រព័ន្ធគោលពីរ។",
   "ui.fileMedia.binary.description.default": "មាតិកាគោលពីរ",
+
+  "ui.documentPreview.fallback": "មិនមានការមើលមុនក្នុងកម្មវិធីសម្រាប់ប្រភេទឯកសារនេះទេ។",
   "ui.lineComment.label.prefix": "មតិយោបល់លើ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "អត្ថាធិប្បាយលើ",

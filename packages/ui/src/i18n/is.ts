@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Tvíundarskrá",
   "ui.fileMedia.binary.description.path": "{{path}} er tvíundarskrá.",
   "ui.fileMedia.binary.description.default": "Tvíundarefni",
+
+  "ui.documentPreview.fallback": "Engin forskoðun í forritinu fyrir þessa skráartegund.",
   "ui.lineComment.label.prefix": "Athugasemdir við",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Gerir athugasemdir við",

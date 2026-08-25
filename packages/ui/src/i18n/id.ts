@@ -45,6 +45,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.path": "Berkas {{path}} bersifat biner.",
   "ui.fileMedia.binary.description.default": "Konten biner",
 
+  "ui.documentPreview.fallback": "Tidak ada pratinjauan di aplikasi untuk jenis file ini.",
+
   "ui.lineComment.label.prefix": "Komentar pada ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Mengomentari ",

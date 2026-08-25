@@ -51,6 +51,8 @@ export const dict = {
     "{{path}} kann nicht angezeigt werden, da es sich um eine Binärdatei handelt.",
   "ui.fileMedia.binary.description.default":
     "Diese Datei kann nicht angezeigt werden, da es sich um eine Binärdatei handelt.",
+
+  "ui.documentPreview.fallback": "Für diesen Dateityp gibt es keine Voransicht in der App.",
   "ui.lineComment.label.prefix": "Kommentar zu ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Kommentiere ",

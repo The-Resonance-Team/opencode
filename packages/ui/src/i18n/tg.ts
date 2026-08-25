@@ -43,6 +43,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Файли дуӣ",
   "ui.fileMedia.binary.description.path": "{{path}} дуӣ аст.",
   "ui.fileMedia.binary.description.default": "Мундариҷаи дуӣ",
+
+  "ui.documentPreview.fallback": "Барои ин намуди файл дар барнома пешнамоиш нест.",
   "ui.lineComment.label.prefix": "Шарҳ дар бораи",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Шарҳ дар бораи",

@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "{{path}} เป็นไฟล์ไบนารีและไม่สามารถแสดงผลได้",
   "ui.fileMedia.binary.description.default": "ไฟล์ไบนารีไม่สามารถแสดงผลได้",
 
+  "ui.documentPreview.fallback": "ไม่มีตัวอย่างแสดงในแอปสำหรับประเภทไฟล์นี้",
+
   "ui.lineComment.label.prefix": "แสดงความคิดเห็นที่ ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "กำลังแสดงความคิดเห็นที่ ",

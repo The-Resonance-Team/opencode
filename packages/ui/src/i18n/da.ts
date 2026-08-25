@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "Binær fil",
   "ui.fileMedia.binary.description.path": "{{path}} kan ikke vises, fordi det er en binær fil.",
   "ui.fileMedia.binary.description.default": "Denne fil kan ikke vises, fordi det er en binær fil.",
+
+  "ui.documentPreview.fallback": "Ingen forhåndsvisning i appen for denne filtype.",
   "ui.lineComment.label.prefix": "Skriv en kommentar til ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Skriver en kommentar til ",

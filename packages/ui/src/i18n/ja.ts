@@ -44,6 +44,8 @@ export const dict = {
   "ui.fileMedia.binary.title": "バイナリファイル",
   "ui.fileMedia.binary.description.path": "{{path}} はバイナリファイルのため表示できません。",
   "ui.fileMedia.binary.description.default": "このファイルはバイナリファイルのため表示できません。",
+
+  "ui.documentPreview.fallback": "このファイルタイプにはアプリ内プレビューはありません。",
   "ui.lineComment.label.prefix": "",
   "ui.lineComment.label.suffix": "へのコメント",
   "ui.lineComment.editorLabel.prefix": "",

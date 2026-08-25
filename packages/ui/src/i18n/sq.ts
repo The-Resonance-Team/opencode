@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Skedar binar",
   "ui.fileMedia.binary.description.path": "{{path}} është binare.",
   "ui.fileMedia.binary.description.default": "Përmbajtja binare",
+
+  "ui.documentPreview.fallback": "Nuk ka parapamje brenda aplikacionit për këtë lloj skedari.",
   "ui.lineComment.label.prefix": "Komentoni ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Duke komentuar ",

@@ -48,6 +48,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "无法显示 {{path}}，因为它是二进制文件。",
   "ui.fileMedia.binary.description.default": "无法显示此文件，因为它是二进制文件。",
 
+  "ui.documentPreview.fallback": "该文件类型没有应用内预览。",
+
   "ui.lineComment.label.prefix": "评论",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "正在评论",

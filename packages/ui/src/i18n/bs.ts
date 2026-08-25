@@ -48,6 +48,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "{{path}} je binarna datoteka.",
   "ui.fileMedia.binary.description.default": "Binarni sadržaj",
 
+  "ui.documentPreview.fallback": "Nema unaprijed prikaza u aplikaciji za ovaj tip datoteke.",
+
   "ui.lineComment.label.prefix": "Komentar na ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Komentarišeš ",

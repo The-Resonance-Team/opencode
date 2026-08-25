@@ -45,6 +45,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Ikkilik fayl",
   "ui.fileMedia.binary.description.path": "{{path}} ikkilikdir.",
   "ui.fileMedia.binary.description.default": "Ikkilik tarkib",
+
+  "ui.documentPreview.fallback": "Ushbu fayl turi uchun ilovada oldindan ko'rish yo'q.",
   "ui.lineComment.label.prefix": "Fikr bildiring ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Fikr bildirish ",

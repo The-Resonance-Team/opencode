@@ -43,6 +43,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Երկուական ֆայլ",
   "ui.fileMedia.binary.description.path": "{{path}}-ը երկուական է:",
   "ui.fileMedia.binary.description.default": "Երկուական բովանդակություն",
+
+  "ui.documentPreview.fallback": "Այս ֆայլի տեսակի համար կիրառության ներսում նախադիտում չկա։",
   "ui.lineComment.label.prefix": "Մեկնաբանություն ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Մեկնաբանում ",

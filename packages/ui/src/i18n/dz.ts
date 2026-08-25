@@ -45,6 +45,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "ཟུང་ལྡན་ཡིག་སྣོད།",
   "ui.fileMedia.binary.description.path": "{{path}} འདི་ཟུང་ལྡན་ཨིན།",
   "ui.fileMedia.binary.description.default": "ཟུང་ལྡན་ནང་དོན།",
+
+  "ui.documentPreview.fallback": "No in-app preview for this file type.",
   "ui.lineComment.label.prefix": "བསམ་འཆར།",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "བསམ་འཆར་བཀོད་དོན།",

@@ -26,6 +26,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "{{path}}은(는) 바이너리 파일이므로 표시할 수 없습니다.",
   "ui.fileMedia.binary.description.default": "바이너리 파일이므로 표시할 수 없습니다.",
 
+  "ui.documentPreview.fallback": "이 파일 형식에는 앱에서 미리보기가 없습니다.",
+
   "ui.lineComment.label.prefix": "",
   "ui.lineComment.label.suffix": "에 댓글 달기",
   "ui.lineComment.editorLabel.prefix": "",

@@ -45,6 +45,8 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.title": "Bináris fájl",
   "ui.fileMedia.binary.description.path": "A {{path}} bináris.",
   "ui.fileMedia.binary.description.default": "Bináris tartalom",
+
+  "ui.documentPreview.fallback": "Ez a fájltípus nem érhető el előnézetben az alkalmazásban.",
   "ui.lineComment.label.prefix": "Hozzászólás",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Hozzászólás",

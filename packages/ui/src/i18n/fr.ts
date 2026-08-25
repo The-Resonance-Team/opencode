@@ -45,6 +45,8 @@ export const dict = {
   "ui.fileMedia.binary.description.path": "Impossible d'afficher {{path}} car il s'agit d'un fichier binaire.",
   "ui.fileMedia.binary.description.default": "Impossible d'afficher ce fichier car il s'agit d'un fichier binaire.",
 
+  "ui.documentPreview.fallback": "Aucune prévisualisation dans l'application pour ce type de fichier.",
+
   "ui.lineComment.label.prefix": "Commenter ",
   "ui.lineComment.label.suffix": "",
   "ui.lineComment.editorLabel.prefix": "Commentaire concernant ",
