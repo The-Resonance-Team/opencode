@@ -38,7 +38,7 @@ import { previewSelectedLines } from "@opencode-ai/session-ui/pierre/selection-b
 import { DocumentPreview } from "@opencode-ai/session-ui/document-preview"
 import { Button } from "@opencode-ai/ui/button"
 import { listPlugins, pluginInvoke, setPluginServer, type OfficePreviewResult } from "@/utils/plugin-invoke"
-import { Markdown } from "@opencode-ai/session-ui/markdown"
+import { OfficePreview } from "@opencode-ai/session-ui/office-preview"
 import { showToast } from "@/utils/toast"
 import { base64Encode, checksum } from "@opencode-ai/core/util/encode"
 import { useLocation, useNavigate, useParams, useSearchParams } from "@solidjs/router"
@@ -1964,21 +1964,31 @@ export default function Page() {
     }
     // ponytail: detection is silent; any failure (plugin absent, HTTP error, timeout) falls back to the built-in preview
     void (async () => {
-      let result: OfficePreviewResult | undefined
+      let found: { plugin: { id: string; invokes: string[] }; result: OfficePreviewResult } | undefined
       try {
         const plugins = await listPlugins()
         const plugin = plugins.find((entry) => entry.invokes.includes("office.preview"))
-        if (plugin)
-          result = await pluginInvoke<OfficePreviewResult>(plugin.id, "office.preview", { filePath: path, sessionID })
+        if (plugin) {
+          const result = await pluginInvoke<OfficePreviewResult>(plugin.id, "office.preview", {
+            filePath: path,
+            sessionID,
+          })
+          if (result?.managed) found = { plugin, result }
+        }
       } catch {
         // detection failed; fall through to the built-in preview
       }
-      if (result?.managed) {
+      if (found) {
+        const { plugin, result } = found
+        const invoke = <T,>(name: string, input?: Record<string, unknown>) =>
+          pluginInvoke<T>(plugin.id, name, { filePath: path, sessionID, ...input })
         dialog.show(() => (
-          <DocumentPreview filename={result.filename || filename} kind="markdown" url={file.url} actions={actions}>
-            {/* ponytail: T6 replaces this with the OfficePreview shell */}
-            <Markdown text={result.content ?? ""} class="h-full w-full overflow-auto p-4" />
-          </DocumentPreview>
+          <OfficePreview
+            result={result}
+            invoke={invoke}
+            openInApp={absolute && platform.openInApp ? () => void platform.openInApp?.(path) : undefined}
+            download={download}
+          />
         ))
         return
       }
