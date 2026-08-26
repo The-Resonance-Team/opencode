@@ -47,6 +47,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Ikkilik tarkib",
 
   "ui.documentPreview.fallback": "Ushbu fayl turi uchun ilovada oldindan ko'rish yo'q.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

@@ -76,6 +76,14 @@ afterEach(() => {
 })
 
 describe("plugin HttpApi", () => {
+  it.live("returns empty data when no plugins are registered", () =>
+    Effect.gen(function* () {
+      const response = yield* request("/api/plugin")
+      expect(response.status).toBe(200)
+      expect(yield* response.json).toEqual({ data: [] })
+    }),
+  )
+
   it.live("lists registered plugins", () =>
     Effect.gen(function* () {
       register("demo", "echo", (input) => Effect.succeed({ echoed: input }))

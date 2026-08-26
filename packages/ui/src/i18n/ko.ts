@@ -27,6 +27,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "바이너리 파일이므로 표시할 수 없습니다.",
 
   "ui.documentPreview.fallback": "이 파일 형식에는 앱에서 미리보기가 없습니다.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "댓글",
   "ui.officePreview.commentsEmpty": "댓글이 없습니다",
   "ui.officePreview.commentPlaceholder": "댓글 추가",

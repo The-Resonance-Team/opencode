@@ -46,6 +46,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Nie można wyświetlić tego pliku, ponieważ jest to plik binarny.",
 
   "ui.documentPreview.fallback": "Brak podglądu w aplikacji dla tego typu pliku.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Komentarze",
   "ui.officePreview.commentsEmpty": "Brak komentarzy",
   "ui.officePreview.commentPlaceholder": "Dodaj komentarz",

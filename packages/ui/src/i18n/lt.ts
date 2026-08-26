@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Dvejetainis turinys",
 
   "ui.documentPreview.fallback": "Šiam failo tipui nėra programos peržiūros.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

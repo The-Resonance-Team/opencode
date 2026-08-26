@@ -46,6 +46,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "бинарни садржај",
 
   "ui.documentPreview.fallback": "Nema unaprijed prikaza u aplikaciji za ovaj tip fajla.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

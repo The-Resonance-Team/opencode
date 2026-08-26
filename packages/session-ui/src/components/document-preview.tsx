@@ -73,12 +73,13 @@ export function DocumentPreview(props: DocumentPreviewProps) {
 
 export function DocumentBody(props: { kind: DocumentKind; url: string; filename: string }) {
   if (props.kind === "pdf") return <PdfBody url={props.url} />
-  if (props.kind === "docx") return <DocxBody url={props.url} />
-  if (props.kind === "markdown") return <MarkdownBody url={props.url} />
+  if (props.kind === "docx") return <DocxBody url={props.url} filename={props.filename} />
+  if (props.kind === "markdown") return <MarkdownBody url={props.url} filename={props.filename} />
   return <FallbackBody filename={props.filename} />
 }
 
 function PdfBody(props: { url: string }) {
+  const i18n = useI18n()
   const [src, setSrc] = createSignal(props.url)
   let blobUrl: string | undefined
   let disposed = false
@@ -99,10 +100,23 @@ function PdfBody(props: { url: string }) {
         // ponytail: on fetch failure keep the data: URL; Chromium's iframe can render data: PDFs directly
       })
   })
-  return <iframe data-slot="document-preview-pdf" class="h-full w-full border-0" src={src()} title="PDF preview" />
+  return (
+    <iframe
+      data-slot="document-preview-pdf"
+      class="h-full w-full border-0"
+      src={src()}
+      title={i18n.t("ui.documentPreview.pdfTitle")}
+    />
+  )
 }
 
-function DocxBody(props: { url: string }) {
+function DocxBody(props: { url: string; filename: string }) {
+  const [failed, setFailed] = createSignal(false)
+  if (failed()) return <FallbackBody filename={props.filename} />
+  return <DocxRender url={props.url} onFail={() => setFailed(true)} />
+}
+
+function DocxRender(props: { url: string; onFail: () => void }) {
   const [target, setTarget] = createSignal<HTMLDivElement>()
   onMount(() => {
     fetch(props.url)
@@ -111,19 +125,27 @@ function DocxBody(props: { url: string }) {
         const el = target()
         return el ? renderAsync({ arrayBuffer: buffer }, el) : undefined
       })
-      .catch((error) => console.error("Document preview failed", error))
+      .catch((error) => {
+        console.error("Document preview failed", error)
+        props.onFail()
+      })
   })
   return <div data-slot="document-preview-docx" class="h-full w-full overflow-auto bg-white p-4" ref={setTarget} />
 }
 
-function MarkdownBody(props: { url: string }) {
+function MarkdownBody(props: { url: string; filename: string }) {
   const [text, setText] = createSignal("")
+  const [failed, setFailed] = createSignal(false)
   onMount(() => {
     fetch(props.url)
       .then((res) => res.text())
       .then(setText)
-      .catch((error) => console.error("Document preview failed", error))
+      .catch((error) => {
+        console.error("Document preview failed", error)
+        setFailed(true)
+      })
   })
+  if (failed()) return <FallbackBody filename={props.filename} />
   return (
     <Show when={text()}>
       <Markdown text={text()} data-slot="document-preview-markdown" class="h-full w-full overflow-auto p-4" />

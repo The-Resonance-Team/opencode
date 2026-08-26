@@ -1,6 +1,5 @@
-// @ts-nocheck
 import { onMount } from "solid-js"
-import * as mod from "./document-preview"
+import { DocumentPreview } from "./document-preview"
 import { Button } from "@opencode-ai/ui/button"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 
@@ -20,7 +19,7 @@ function Open(props: {
   const dialog = useDialog()
   const open = () =>
     dialog.show(() => (
-      <mod.DocumentPreview
+      <DocumentPreview
         filename={props.filename}
         kind={props.kind}
         url={props.url}
@@ -39,7 +38,7 @@ function Open(props: {
 export default {
   title: "UI/DocumentPreview",
   id: "components-document-preview",
-  component: mod.DocumentPreview,
+  component: DocumentPreview,
   tags: ["autodocs"],
 }
 

@@ -78,6 +78,19 @@ describe("plugin-invoke", () => {
     await expect(listPlugins()).rejects.toThrow("No active server connection")
   })
 
+  test("passes an abort timeout signal to both requests", async () => {
+    const { fetch, seen } = fakeFetch(() => new Response(JSON.stringify({ data: [] })))
+    setPluginServer({ url: "http://localhost:4096" })
+    try {
+      await listPlugins(fetch)
+      await pluginInvoke("p", "n", {}, fetch)
+      expect(seen[0].init?.signal).toBeInstanceOf(AbortSignal)
+      expect(seen[1].init?.signal).toBeInstanceOf(AbortSignal)
+    } finally {
+      setPluginServer(undefined)
+    }
+  })
+
   test("pluginInvoke POSTs name and input to /api/plugin/:id/invoke", async () => {
     const { fetch, seen } = fakeFetch(
       () =>

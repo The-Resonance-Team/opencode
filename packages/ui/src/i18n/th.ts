@@ -45,6 +45,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "ไฟล์ไบนารีไม่สามารถแสดงผลได้",
 
   "ui.documentPreview.fallback": "ไม่มีตัวอย่างแสดงในแอปสำหรับประเภทไฟล์นี้",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "ความคิดเห็น",
   "ui.officePreview.commentsEmpty": "ไม่มีความคิดเห็น",
   "ui.officePreview.commentPlaceholder": "เพิ่มความคิดเห็น",

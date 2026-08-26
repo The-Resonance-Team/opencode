@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Binärt innehåll",
 
   "ui.documentPreview.fallback": "Ingen inbyggd förhandsvisning för denna filtyp.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Kommentarer",
   "ui.officePreview.commentsEmpty": "Inga kommentarer",
   "ui.officePreview.commentPlaceholder": "Lägg till en kommentar",

@@ -45,6 +45,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Хоёртын агуулга",
 
   "ui.documentPreview.fallback": "Апп дотор энэ файлын төрлийн өмнөх хараал байхгүй.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

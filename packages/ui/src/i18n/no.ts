@@ -30,6 +30,7 @@ export const dict: Record<Keys, string> = {
   "ui.fileMedia.binary.description.default": "Denne filen kan ikke vises fordi det er en binærfil.",
 
   "ui.documentPreview.fallback": "Ingen forhåndsvisning i appen for denne filtypen.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Kommentarer",
   "ui.officePreview.commentsEmpty": "Ingen kommentarer",
   "ui.officePreview.commentPlaceholder": "Legg til en kommentar",

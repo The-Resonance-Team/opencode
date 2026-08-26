@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "ორობითი შინაარსი",
 
   "ui.documentPreview.fallback": "ამ ფაილის ტიპისთვის აპლიკაციაში წინასწარი ნახვა არ არის.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Binární obsah",
 
   "ui.documentPreview.fallback": "Tento typ souboru nemá náhled v aplikaci.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Komentáře",
   "ui.officePreview.commentsEmpty": "Žádné komentáře",
   "ui.officePreview.commentPlaceholder": "Přidat komentář",

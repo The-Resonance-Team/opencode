@@ -46,6 +46,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Denne fil kan ikke vises, fordi det er en binær fil.",
 
   "ui.documentPreview.fallback": "Ingen forhåndsvisning i appen for denne filtype.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Kommentarer",
   "ui.officePreview.commentsEmpty": "Ingen kommentarer",
   "ui.officePreview.commentPlaceholder": "Tilføj en kommentar",

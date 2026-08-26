@@ -49,6 +49,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "无法显示此文件，因为它是二进制文件。",
 
   "ui.documentPreview.fallback": "该文件类型没有应用内预览。",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "评论",
   "ui.officePreview.commentsEmpty": "暂无评论",
   "ui.officePreview.commentPlaceholder": "添加评论",

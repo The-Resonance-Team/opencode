@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Δυαδικό περιεχόμενο",
 
   "ui.documentPreview.fallback": "Δεν υπάρχει προεπισκόπηση στην εφαρμογή για αυτόν τον τύπο αρχείου.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Σχόλια",
   "ui.officePreview.commentsEmpty": "Δεν υπάρχουν σχόλια",
   "ui.officePreview.commentPlaceholder": "Προσθήκη σχολίου",

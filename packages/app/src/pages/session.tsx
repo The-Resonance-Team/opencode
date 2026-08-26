@@ -1917,12 +1917,13 @@ export default function Page() {
     const download = () => {
       const anchor = document.createElement("a")
       anchor.href = file.url
-      anchor.download = getFilename(file.filename) || "attachment"
+      anchor.download = getFilename(file.filename) || language.t("common.attachment")
       anchor.click()
     }
     const path = file.filename ?? ""
     const absolute = path.startsWith("/") || path.startsWith("\\\\") || /^[a-zA-Z]:[\\/]/.test(path)
-    const filename = getFilename(file.filename) || "attachment"
+    const filename = getFilename(file.filename) || language.t("common.attachment")
+    const openInApp = () => void platform.openInApp?.(path)
     const kind =
       file.mime === "application/pdf"
         ? "pdf"
@@ -1932,7 +1933,7 @@ export default function Page() {
     const actions = (
       <>
         <Show when={platform.openInApp && absolute}>
-          <Button variant="ghost" onClick={() => void platform.openInApp?.(path)}>
+          <Button variant="ghost" onClick={openInApp}>
             {language.t("session.attachment.openInApp")}
           </Button>
         </Show>
@@ -1958,12 +1959,7 @@ export default function Page() {
       download()
     }
     const sessionID = params.id
-    if (!OFFICE_MIMES.includes(file.mime) || !absolute || !sessionID) {
-      openPreview()
-      return
-    }
-    // ponytail: detection is silent; any failure (plugin absent, HTTP error, timeout) falls back to the built-in preview
-    void (async () => {
+    const openManaged = async () => {
       let found: { plugin: { id: string; invokes: string[] }; result: OfficePreviewResult } | undefined
       try {
         const plugins = await listPlugins()
@@ -1986,14 +1982,20 @@ export default function Page() {
           <OfficePreview
             result={result}
             invoke={invoke}
-            openInApp={absolute && platform.openInApp ? () => void platform.openInApp?.(path) : undefined}
+            openInApp={platform.openInApp ? openInApp : undefined}
             download={download}
           />
         ))
         return
       }
       openPreview()
-    })()
+    }
+    if (!OFFICE_MIMES.includes(file.mime) || !absolute || !sessionID) {
+      openPreview()
+      return
+    }
+    // ponytail: detection is silent; any failure (plugin absent, HTTP error, timeout) falls back to the built-in preview
+    void openManaged()
   }
 
   const actions = { revert, openAttachment }

@@ -30,6 +30,14 @@ const STATUS_KEYS: Record<OfficeComment["status"], string> = {
   denied: "ui.officePreview.status.denied",
 }
 
+const bubbleStyle = {
+  position: "fixed",
+  "z-index": "100",
+  "border-radius": "9999px",
+  "background-color": "var(--icon-interactive-base, #333333)",
+  color: "var(--white, #ffffff)",
+} as const
+
 export interface OfficePreviewProps {
   result: OfficePreviewResult
   invoke: <T = unknown>(name: string, input?: Record<string, unknown>) => Promise<T | undefined>
@@ -360,16 +368,12 @@ export function OfficePreview(props: OfficePreviewProps) {
                 type="button"
                 data-slot="office-preview-add-comment"
                 style={{
-                  position: "fixed",
+                  ...bubbleStyle,
                   left: `${value().x}px`,
                   top: `${value().y - 36}px`,
-                  "z-index": "100",
                   transform: "translateX(-50%)",
                   padding: "4px 10px",
-                  "border-radius": "9999px",
                   border: "none",
-                  "background-color": "var(--icon-interactive-base, #333333)",
-                  color: "var(--white, #ffffff)",
                   "font-size": "12px",
                   cursor: "pointer",
                 }}
@@ -389,15 +393,11 @@ export function OfficePreview(props: OfficePreviewProps) {
               <div
                 data-slot="office-preview-chip"
                 style={{
-                  position: "fixed",
+                  ...bubbleStyle,
                   left: `${value().x + 8}px`,
                   top: `${value().y - 4}px`,
-                  "z-index": "100",
                   "pointer-events": "none",
                   padding: "2px 8px",
-                  "border-radius": "9999px",
-                  "background-color": "var(--icon-interactive-base, #333333)",
-                  color: "var(--white, #ffffff)",
                   "font-size": "11px",
                 }}
               >

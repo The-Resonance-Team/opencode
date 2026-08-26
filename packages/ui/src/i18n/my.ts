@@ -46,6 +46,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Binary အကြောင်းအရာ",
 
   "ui.documentPreview.fallback": "ဤဖိုင်အမျိုးအစားအတွက် အက်ပ်အတွင်း မှီကြည့်ရန်မရှိပါ။",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

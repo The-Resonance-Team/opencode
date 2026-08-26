@@ -45,6 +45,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "هذا ملف ثنائي ولا يمكن عرضه.",
 
   "ui.documentPreview.fallback": "لا يوجد معاينة داخل التطبيق لهذا النوع من الملفات.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "التعليقات",
   "ui.officePreview.commentsEmpty": "لا توجد تعليقات",
   "ui.officePreview.commentPlaceholder": "أضف تعليقًا",

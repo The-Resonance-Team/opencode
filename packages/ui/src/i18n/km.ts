@@ -46,6 +46,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "មាតិកាគោលពីរ",
 
   "ui.documentPreview.fallback": "មិនមានការមើលមុនក្នុងកម្មវិធីសម្រាប់ប្រភេទឯកសារនេះទេ។",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

@@ -49,6 +49,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "無法顯示此檔案，因為它是二進位檔案。",
 
   "ui.documentPreview.fallback": "此檔案類型無應用程式內預覽。",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "留言",
   "ui.officePreview.commentsEmpty": "沒有留言",
   "ui.officePreview.commentPlaceholder": "新增留言",

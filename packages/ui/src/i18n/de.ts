@@ -53,6 +53,7 @@ export const dict = {
     "Diese Datei kann nicht angezeigt werden, da es sich um eine Binärdatei handelt.",
 
   "ui.documentPreview.fallback": "Für diesen Dateityp gibt es keine Voransicht in der App.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Kommentare",
   "ui.officePreview.commentsEmpty": "Keine Kommentare",
   "ui.officePreview.commentPlaceholder": "Kommentar hinzufügen",

@@ -46,6 +46,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Невозможно отобразить этот файл, так как он двоичный.",
 
   "ui.documentPreview.fallback": "Нет встроенного предпросмотра для этого типа файлов.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Комментарии",
   "ui.officePreview.commentsEmpty": "Нет комментариев",
   "ui.officePreview.commentPlaceholder": "Добавить комментарий",

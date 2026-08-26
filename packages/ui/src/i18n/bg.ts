@@ -45,6 +45,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Двоично съдържание",
 
   "ui.documentPreview.fallback": "Няма предпросмотр в приложението за този тип файлове.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Коментари",
   "ui.officePreview.commentsEmpty": "Няма коментари",
   "ui.officePreview.commentPlaceholder": "Добавете коментар",

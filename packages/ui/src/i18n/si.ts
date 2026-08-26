@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "ද්විමය අන්තර්ගතය",
 
   "ui.documentPreview.fallback": "මෙම ගොනු වර්ගය සඳහා යෙදුම තුළ පෙරදර්ශනයක් නැත.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

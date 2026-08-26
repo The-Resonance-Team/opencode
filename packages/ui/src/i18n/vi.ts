@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Nội dung nhị phân",
 
   "ui.documentPreview.fallback": "Không có xem trước trong ứng dụng cho loại tệp này.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Nhận xét",
   "ui.officePreview.commentsEmpty": "Chưa có nhận xét",
   "ui.officePreview.commentPlaceholder": "Thêm nhận xét",

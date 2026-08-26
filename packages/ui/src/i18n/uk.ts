@@ -47,6 +47,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "Неможливо відобразити цей файл, оскільки він двійковий.",
 
   "ui.documentPreview.fallback": "Для цього типу файлів немає попереднього перегляду в застосунку.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Коментарі",
   "ui.officePreview.commentsEmpty": "Немає коментарів",
   "ui.officePreview.commentPlaceholder": "Додати коментар",

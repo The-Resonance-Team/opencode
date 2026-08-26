@@ -45,6 +45,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "Мундариҷаи дуӣ",
 
   "ui.documentPreview.fallback": "Барои ин намуди файл дар барнома пешнамоиш нест.",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

@@ -45,6 +45,7 @@ export const dict: Record<string, string> = {
   "ui.fileMedia.binary.description.default": "ሁለትዮሽ ይዘት",
 
   "ui.documentPreview.fallback": "ይህ የፋይል አይነት በመተግበሪያው ውስጥ የማጣቀሻ አገልግላታ የለውም።",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",

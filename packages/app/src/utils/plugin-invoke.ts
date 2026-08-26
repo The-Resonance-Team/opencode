@@ -3,6 +3,9 @@ import { authTokenFromCredentials } from "./server"
 
 export type { OfficeComment, OfficePreviewResult } from "@opencode-ai/session-ui/office-preview"
 
+// ponytail: detection is click-triggered, not on the render path; a hung invoke must not leave the attachment click dead
+const INVOKE_TIMEOUT_MS = 10_000
+
 export type PluginEntry = { id: string; invokes: string[] }
 
 // ponytail: the active server connection only lives in the Solid Server context,
@@ -48,7 +51,10 @@ async function requestError(res: Response, fallback: string) {
 
 export async function listPlugins(fetcher: typeof globalThis.fetch = globalThis.fetch): Promise<PluginEntry[]> {
   const base = requireConnection()
-  const res = await fetcher(`${base.url}/api/plugin`, { headers: authHeaders(base) })
+  const res = await fetcher(`${base.url}/api/plugin`, {
+    headers: authHeaders(base),
+    signal: AbortSignal.timeout(INVOKE_TIMEOUT_MS),
+  })
   if (!res.ok) throw await requestError(res, `GET /api/plugin failed: ${res.status}`)
   const body: unknown = await res.json()
   return isRecord(body) && Array.isArray(body.data) ? (body.data as PluginEntry[]) : []
@@ -66,6 +72,7 @@ export async function pluginInvoke<T = unknown>(
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders(base) },
     body: JSON.stringify({ name, input }),
+    signal: AbortSignal.timeout(INVOKE_TIMEOUT_MS),
   })
   if (!res.ok) throw await requestError(res, `POST ${path} failed: ${res.status}`)
   if (res.status === 204) return undefined

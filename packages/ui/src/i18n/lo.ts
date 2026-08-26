@@ -45,6 +45,7 @@ export const dict = {
   "ui.fileMedia.binary.description.default": "ເນື້ອໃນຖານສອງ",
 
   "ui.documentPreview.fallback": "ບໍ່ມີການບອກສະເໜີໃນແອັບສຳລັບຊະນິດຟາይລ໌ນີ້",
+  "ui.documentPreview.pdfTitle": "PDF preview",
   "ui.officePreview.comments": "Comments",
   "ui.officePreview.commentsEmpty": "No comments",
   "ui.officePreview.commentPlaceholder": "Add a comment",
