@@ -378,6 +378,7 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
               btn.style.cursor = "pointer"
               btn.style.whiteSpace = "nowrap"
               btn.style.fontWeight = i === 0 ? "600" : "400"
+              btn.style.color = "#111827"
               btn.onclick = () => renderSheet(i)
               tabBar.appendChild(btn)
             }
@@ -385,7 +386,7 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
             zoom.textContent = "100%"
             zoom.style.marginLeft = "auto"
             zoom.style.padding = "0 8px"
-            zoom.style.color = "#666"
+            zoom.style.color = "#374151"
             tabBar.appendChild(zoom)
             el.appendChild(tabBar)
           }
