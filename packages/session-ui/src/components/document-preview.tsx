@@ -339,7 +339,7 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
           wrap.appendChild(table)
           el.appendChild(wrap)
           const sheetNames: string[] = (wb as any).sheetNames ?? (wb as any).sheets?.map((s: any) => s.name) ?? []
-          if (sheetNames.length) {
+          {
             const tabBar = document.createElement("div")
             tabBar.style.display = "flex"
             tabBar.style.alignItems = "center"
@@ -367,9 +367,9 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
               }
               nwb.destroy?.()
             }
-            for (let i = 0; i < sheetNames.length; i++) {
+            for (let i = 0; i < Math.max(sheetNames.length, 1); i++) {
               const btn = document.createElement("button")
-              btn.textContent = sheetNames[i]
+              btn.textContent = sheetNames[i] || "Sheet1"
               btn.dataset.sheet = String(i)
               btn.style.padding = "4px 12px"
               btn.style.border = "1px solid transparent"
