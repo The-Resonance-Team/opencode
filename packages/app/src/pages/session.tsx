@@ -39,8 +39,10 @@ import { DocumentPreview } from "@opencode-ai/session-ui/document-preview"
 import { Button } from "@opencode-ai/ui/button"
 import { listPlugins, pluginInvoke, setPluginServer, type OfficePreviewResult } from "@/utils/plugin-invoke"
 import { OfficePreview } from "@opencode-ai/session-ui/office-preview"
+import { previewTabKey, setPreviewPayload, type PreviewPayload } from "@/pages/session/document-preview-tab"
 import { showToast } from "@/utils/toast"
 import { base64Encode, checksum } from "@opencode-ai/core/util/encode"
+import { OFFICE_FILE_TYPES } from "@/constants/file-picker"
 import { useLocation, useNavigate, useParams, useSearchParams } from "@solidjs/router"
 import { NewSessionView, SessionHeader } from "@/components/session"
 import { ErrorPage } from "@/pages/error"
@@ -110,12 +112,6 @@ import { createSessionLineage } from "./session/session-lineage"
 type FollowupItem = FollowupDraft & { id: string }
 type FollowupEdit = Pick<FollowupItem, "id" | "prompt" | "context">
 const emptyFollowups: FollowupItem[] = []
-
-const OFFICE_MIMES: string[] = [
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-]
 
 type ChangeMode = "git" | "branch" | "turn"
 type VcsMode = "git" | "branch"
@@ -1927,9 +1923,18 @@ export default function Page() {
     const kind =
       file.mime === "application/pdf"
         ? "pdf"
-        : file.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        : file.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+            /\.docx$/i.test(filename)
           ? "docx"
-          : null
+          : file.mime === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+              /\.xlsx$/i.test(filename)
+            ? "xlsx"
+            : file.mime === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+                /\.pptx$/i.test(filename)
+              ? "pptx"
+              : file.mime === "text/markdown" || /\.md$/i.test(filename)
+                ? "markdown"
+                : null
     const actions = (
       <>
         <Show when={platform.openInApp && absolute}>
@@ -1942,8 +1947,20 @@ export default function Page() {
         </Button>
       </>
     )
+    const openInPanel = (payload: PreviewPayload) => {
+      const key = previewTabKey(payload.filename)
+      setPreviewPayload(key, payload)
+      openReviewPanel()
+      void tabs().open(key)
+      // ponytail: Kobalte falls back to the first tab (firing onChange→setActive) before the new trigger registers; re-assert after it settles
+      queueMicrotask(() => tabs().setActive(key))
+    }
     const openPreview = () => {
       if (kind) {
+        if (isDesktop()) {
+          openInPanel({ source: "builtin", filename, kind, url: file.url, path: absolute ? path : undefined })
+          return
+        }
         dialog.show(() => <DocumentPreview filename={filename} kind={kind} url={file.url} actions={actions} />)
         return
       }
@@ -1959,7 +1976,7 @@ export default function Page() {
       download()
     }
     const sessionID = params.id
-    const openManaged = async () => {
+    const openManaged = async (sessionID: string) => {
       let found: { plugin: { id: string; invokes: string[] }; result: OfficePreviewResult } | undefined
       try {
         const plugins = await listPlugins()
@@ -1976,6 +1993,10 @@ export default function Page() {
       }
       if (found) {
         const { plugin, result } = found
+        if (isDesktop()) {
+          openInPanel({ source: "plugin", filename: result.filename, pluginId: plugin.id, result, path, sessionID })
+          return
+        }
         const invoke = <T,>(name: string, input?: Record<string, unknown>) =>
           pluginInvoke<T>(plugin.id, name, { filePath: path, sessionID, ...input })
         dialog.show(() => (
@@ -1990,12 +2011,12 @@ export default function Page() {
       }
       openPreview()
     }
-    if (!OFFICE_MIMES.includes(file.mime) || !absolute || !sessionID) {
+    if (!OFFICE_FILE_TYPES.includes(file.mime) || !absolute || !sessionID) {
       openPreview()
       return
     }
     // ponytail: detection is silent; any failure (plugin absent, HTTP error, timeout) falls back to the built-in preview
-    void openManaged()
+    void openManaged(sessionID)
   }
 
   const actions = { revert, openAttachment }

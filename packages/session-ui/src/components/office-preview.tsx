@@ -3,7 +3,7 @@ import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useI18n } from "@opencode-ai/ui/context/i18n"
 import { For, Show, Switch, Match, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-import { DocumentBody, DocumentPreview, type DocumentKind } from "./document-preview"
+import { DocumentBody, DocumentPreview, DocumentPreviewPanel, type DocumentKind } from "./document-preview"
 import { Markdown } from "./markdown"
 
 export * from "./office-preview-model"
@@ -43,6 +43,8 @@ export interface OfficePreviewProps {
   invoke: <T = unknown>(name: string, input?: Record<string, unknown>) => Promise<T | undefined>
   openInApp?: () => void
   download?: () => void
+  embedded?: boolean
+  onClose?: () => void
 }
 
 export function OfficePreview(props: OfficePreviewProps) {
@@ -313,6 +315,146 @@ export function OfficePreview(props: OfficePreviewProps) {
     </>
   )
 
+  const previewBody = (
+    <div class="flex h-full w-full min-h-0">
+      <div
+        ref={(el) => {
+          body = el
+        }}
+        class="relative min-w-0 flex-1"
+        onPointerOver={onHover}
+        onPointerOut={(event) => {
+          if (event.target instanceof HTMLElement && event.target.closest("[data-office-anchor]")) setChip(undefined)
+        }}
+      >
+        <Switch>
+          <Match when={draft() && !store.editing}>
+            <Markdown
+              text={store.result.content ?? ""}
+              data-slot="office-preview-draft"
+              class="h-full w-full overflow-auto p-4"
+              onScroll={() => {
+                setPick(undefined)
+                setChip(undefined)
+              }}
+            />
+          </Match>
+          <Match when={draft() && store.editing}>
+            <div
+              contentEditable
+              data-slot="office-preview-edit"
+              class="h-full w-full overflow-auto whitespace-pre-wrap p-4 text-14-regular text-text outline-none"
+              onScroll={() => {
+                setPick(undefined)
+                setChip(undefined)
+              }}
+              ref={(el) => {
+                editRoot = el
+                if (el && !el.textContent) el.textContent = store.result.content ?? ""
+              }}
+            />
+          </Match>
+          <Match when={true}>
+            <DocumentBody kind={fileKind()} url={store.result.fileUrl ?? ""} filename={store.result.filename} />
+          </Match>
+        </Switch>
+        <Show when={pick()}>
+          {(value) => (
+            <button
+              type="button"
+              data-slot="office-preview-add-comment"
+              style={{
+                ...bubbleStyle,
+                left: `${value().x}px`,
+                top: `${value().y - 36}px`,
+                transform: "translateX(-50%)",
+                padding: "4px 10px",
+                border: "none",
+                "font-size": "12px",
+                cursor: "pointer",
+              }}
+              onPointerDown={(event) => event.preventDefault()}
+              onClick={() => {
+                setPendingRange(value().index)
+                setPick(undefined)
+                commentInput?.focus()
+              }}
+            >
+              {i18n.t("ui.officePreview.addComment")}
+            </button>
+          )}
+        </Show>
+        <Show when={chip()}>
+          {(value) => (
+            <div
+              data-slot="office-preview-chip"
+              style={{
+                ...bubbleStyle,
+                left: `${value().x + 8}px`,
+                top: `${value().y - 4}px`,
+                "pointer-events": "none",
+                padding: "2px 8px",
+                "font-size": "11px",
+              }}
+            >
+              {value().author}
+            </div>
+          )}
+        </Show>
+      </div>
+      <aside data-slot="office-preview-panel" class="flex w-[300px] shrink-0 flex-col border-l border-border-weak-base">
+        <div class="border-b border-border-weak-base p-3">
+          <span class="text-14-semibold text-text-strong">{i18n.t("ui.officePreview.comments")}</span>
+        </div>
+        <div class="flex flex-col gap-2 p-3">
+          <textarea
+            rows={2}
+            placeholder={i18n.t("ui.officePreview.commentPlaceholder")}
+            ref={(el) => {
+              commentInput = el
+              if (el && el.value !== commentDraft()) el.value = commentDraft()
+            }}
+            onInput={(event) => setCommentDraft(event.currentTarget.value)}
+            class="w-full resize-none rounded-md border border-border-weak-base bg-background p-2 text-14-regular text-text"
+          />
+          <div class="flex justify-end">
+            <Button variant="primary" disabled={store.busy || !commentDraft().trim()} onClick={createComment}>
+              {i18n.t("ui.officePreview.commentSubmit")}
+            </Button>
+          </div>
+        </div>
+        <Show when={store.error}>
+          <div
+            data-slot="office-preview-error"
+            class="mx-3 mb-2 rounded-md bg-background-weak px-2 py-1.5 text-12-regular text-text-weak"
+          >
+            {i18n.t("ui.officePreview.error")}: {store.error}
+          </div>
+        </Show>
+        <div class="min-h-0 flex-1 overflow-auto">
+          <Show
+            when={store.result.comments.length === 0}
+            fallback={<For each={store.result.comments}>{(comment) => commentCard(comment)}</For>}
+          >
+            <p class="p-4 text-12-regular text-text-weak">{i18n.t("ui.officePreview.commentsEmpty")}</p>
+          </Show>
+        </div>
+      </aside>
+    </div>
+  )
+
+  if (props.embedded)
+    return (
+      <DocumentPreviewPanel
+        filename={store.result.filename}
+        kind={draft() ? "markdown" : fileKind()}
+        url={store.result.fileUrl ?? ""}
+        actions={headerActions}
+        onClose={props.onClose}
+      >
+        {previewBody}
+      </DocumentPreviewPanel>
+    )
   return (
     <DocumentPreview
       filename={store.result.filename}
@@ -320,134 +462,7 @@ export function OfficePreview(props: OfficePreviewProps) {
       url={store.result.fileUrl ?? ""}
       actions={headerActions}
     >
-      <div class="flex h-full w-full min-h-0">
-        <div
-          ref={(el) => {
-            body = el
-          }}
-          class="relative min-w-0 flex-1"
-          onPointerOver={onHover}
-          onPointerOut={(event) => {
-            if (event.target instanceof HTMLElement && event.target.closest("[data-office-anchor]")) setChip(undefined)
-          }}
-        >
-          <Switch>
-            <Match when={draft() && !store.editing}>
-              <Markdown
-                text={store.result.content ?? ""}
-                data-slot="office-preview-draft"
-                class="h-full w-full overflow-auto p-4"
-                onScroll={() => {
-                  setPick(undefined)
-                  setChip(undefined)
-                }}
-              />
-            </Match>
-            <Match when={draft() && store.editing}>
-              <div
-                contentEditable
-                data-slot="office-preview-edit"
-                class="h-full w-full overflow-auto whitespace-pre-wrap p-4 text-14-regular text-text outline-none"
-                onScroll={() => {
-                  setPick(undefined)
-                  setChip(undefined)
-                }}
-                ref={(el) => {
-                  editRoot = el
-                  if (el && !el.textContent) el.textContent = store.result.content ?? ""
-                }}
-              />
-            </Match>
-            <Match when={true}>
-              <DocumentBody kind={fileKind()} url={store.result.fileUrl ?? ""} filename={store.result.filename} />
-            </Match>
-          </Switch>
-          <Show when={pick()}>
-            {(value) => (
-              <button
-                type="button"
-                data-slot="office-preview-add-comment"
-                style={{
-                  ...bubbleStyle,
-                  left: `${value().x}px`,
-                  top: `${value().y - 36}px`,
-                  transform: "translateX(-50%)",
-                  padding: "4px 10px",
-                  border: "none",
-                  "font-size": "12px",
-                  cursor: "pointer",
-                }}
-                onPointerDown={(event) => event.preventDefault()}
-                onClick={() => {
-                  setPendingRange(value().index)
-                  setPick(undefined)
-                  commentInput?.focus()
-                }}
-              >
-                {i18n.t("ui.officePreview.addComment")}
-              </button>
-            )}
-          </Show>
-          <Show when={chip()}>
-            {(value) => (
-              <div
-                data-slot="office-preview-chip"
-                style={{
-                  ...bubbleStyle,
-                  left: `${value().x + 8}px`,
-                  top: `${value().y - 4}px`,
-                  "pointer-events": "none",
-                  padding: "2px 8px",
-                  "font-size": "11px",
-                }}
-              >
-                {value().author}
-              </div>
-            )}
-          </Show>
-        </div>
-        <aside
-          data-slot="office-preview-panel"
-          class="flex w-[300px] shrink-0 flex-col border-l border-border-weak-base"
-        >
-          <div class="border-b border-border-weak-base p-3">
-            <span class="text-14-semibold text-text-strong">{i18n.t("ui.officePreview.comments")}</span>
-          </div>
-          <div class="flex flex-col gap-2 p-3">
-            <textarea
-              rows={2}
-              placeholder={i18n.t("ui.officePreview.commentPlaceholder")}
-              ref={(el) => {
-                commentInput = el
-                if (el && el.value !== commentDraft()) el.value = commentDraft()
-              }}
-              onInput={(event) => setCommentDraft(event.currentTarget.value)}
-              class="w-full resize-none rounded-md border border-border-weak-base bg-background p-2 text-14-regular text-text"
-            />
-            <div class="flex justify-end">
-              <Button variant="primary" disabled={store.busy || !commentDraft().trim()} onClick={createComment}>
-                {i18n.t("ui.officePreview.commentSubmit")}
-              </Button>
-            </div>
-          </div>
-          <Show when={store.error}>
-            <div
-              data-slot="office-preview-error"
-              class="mx-3 mb-2 rounded-md bg-background-weak px-2 py-1.5 text-12-regular text-text-weak"
-            >
-              {i18n.t("ui.officePreview.error")}: {store.error}
-            </div>
-          </Show>
-          <div class="min-h-0 flex-1 overflow-auto">
-            <Show
-              when={store.result.comments.length === 0}
-              fallback={<For each={store.result.comments}>{(comment) => commentCard(comment)}</For>}
-            >
-              <p class="p-4 text-12-regular text-text-weak">{i18n.t("ui.officePreview.commentsEmpty")}</p>
-            </Show>
-          </div>
-        </aside>
-      </div>
+      {previewBody}
     </DocumentPreview>
   )
 }
