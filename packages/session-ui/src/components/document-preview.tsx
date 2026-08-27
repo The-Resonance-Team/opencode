@@ -174,6 +174,19 @@ function XlsxBody(props: { url: string; filename: string }) {
 
 // ponytail: shared table builder — column widths from Excel model, merge cells, freeze cols
 function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTMLTableElement {
+  // resolve column width in px, capped at 400px
+  const colPx = (colIdx: number): number => {
+    let charW = ws.defaultColWidth ?? 8
+    if (ws.colWidths?.[colIdx] != null) charW = ws.colWidths[colIdx]
+    else if (ws.colWidthRanges)
+      for (const rng of ws.colWidthRanges) {
+        if (colIdx >= rng.min && colIdx <= rng.max) {
+          charW = rng.width
+          break
+        }
+      }
+    return Math.min(charW * 7 + 16, 400)
+  }
   const table = document.createElement("table")
   table.className = "min-w-full border-collapse text-12-regular"
   table.style.tableLayout = "fixed"
@@ -185,20 +198,9 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
     const colgroup = document.createElement("colgroup")
     for (let c = 0; c < colCount; c++) {
       const col = document.createElement("col")
-      // resolve per-column width: colWidths > colWidthRanges > defaultColWidth
-      let charW = ws.defaultColWidth ?? 8
-      if (ws.colWidths?.[c] != null) charW = ws.colWidths[c]
-      else if (ws.colWidthRanges) {
-        for (const rng of ws.colWidthRanges) {
-          if (c >= rng.min && c <= rng.max) {
-            charW = rng.width
-            break
-          }
-        }
-      }
-      // Excel char-width ≈ 7px at 12px font + 16px padding
-      col.style.width = `${charW * 7 + 16}px`
-      col.style.minWidth = col.style.width
+      const px = colPx(c)
+      col.style.width = `${px}px`
+      col.style.minWidth = `${px}px`
       colgroup.appendChild(col)
     }
     table.appendChild(colgroup)
@@ -250,18 +252,7 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
       if (freezeCols && cell.col < freezeCols) {
         th.style.position = "sticky"
         let leftPx = 0
-        for (let c = 0; c < cell.col; c++) {
-          let cw = ws.defaultColWidth ?? 8
-          if (ws.colWidths?.[c] != null) cw = ws.colWidths[c]
-          else if (ws.colWidthRanges)
-            for (const rng of ws.colWidthRanges) {
-              if (c >= rng.min && c <= rng.max) {
-                cw = rng.width
-                break
-              }
-            }
-          leftPx += cw * 7 + 16
-        }
+        for (let c = 0; c < cell.col; c++) leftPx += colPx(c)
         th.style.left = `${leftPx}px`
         th.style.zIndex = "3"
         th.style.backgroundColor = "#5B3F86"
@@ -297,18 +288,7 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
       if (freezeCols && cell.col < freezeCols) {
         td.style.position = "sticky"
         let leftPx = 0
-        for (let c = 0; c < cell.col; c++) {
-          let cw = ws.defaultColWidth ?? 8
-          if (ws.colWidths?.[c] != null) cw = ws.colWidths[c]
-          else if (ws.colWidthRanges)
-            for (const rng of ws.colWidthRanges) {
-              if (c >= rng.min && c <= rng.max) {
-                cw = rng.width
-                break
-              }
-            }
-          leftPx += cw * 7 + 16
-        }
+        for (let c = 0; c < cell.col; c++) leftPx += colPx(c)
         td.style.left = `${leftPx}px`
         td.style.zIndex = "1"
         td.style.backgroundColor = "inherit"
@@ -358,7 +338,7 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
           wrap.style.background = "white"
           wrap.appendChild(table)
           el.appendChild(wrap)
-          const sheetNames: string[] = (wb as any).sheetNames ?? []
+          const sheetNames: string[] = (wb as any).sheetNames ?? (wb as any).sheets?.map((s: any) => s.name) ?? []
           if (sheetNames.length) {
             const tabBar = document.createElement("div")
             tabBar.style.display = "flex"
