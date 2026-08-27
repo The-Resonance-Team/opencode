@@ -6,6 +6,11 @@ import { FileIcon } from "@opencode-ai/ui/file-icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
 import { Markdown } from "./markdown"
 
+interface OoxmlViewer {
+  load(source: ArrayBuffer): Promise<void>
+  destroy?(): void
+}
+
 export type DocumentKind = "pdf" | "docx" | "xlsx" | "pptx" | "markdown" | "fallback"
 
 export interface DocumentPreviewProps {
@@ -131,7 +136,7 @@ function DocxBody(props: { url: string; filename: string }) {
 
 function DocxRender(props: { url: string; onFail: () => void }) {
   const [target, setTarget] = createSignal<HTMLDivElement>()
-  let viewer: any | undefined
+  let viewer: OoxmlViewer | undefined
   onCleanup(() => viewer?.destroy?.())
   onMount(async () => {
     const el = target()
@@ -143,8 +148,9 @@ function DocxRender(props: { url: string; onFail: () => void }) {
       try {
         // @ts-ignore
         const mod: any = await import("@silurus/ooxml/docx")
-        viewer = new mod.DocxScrollViewer(el, { enableTextSelection: true })
-        await viewer.load(buffer)
+        const v: OoxmlViewer = new mod.DocxScrollViewer(el, { enableTextSelection: true })
+        await v.load(buffer)
+        viewer = v
         return
       } catch (wasmError) {
         console.warn("WASM viewer failed, fallback to docx-renderer", wasmError)
@@ -174,7 +180,6 @@ function XlsxBody(props: { url: string; filename: string }) {
 
 // ponytail: shared table builder — column widths from Excel model, merge cells, freeze cols
 function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTMLTableElement {
-  // resolve column width in px, capped at 400px
   const colPx = (colIdx: number): number => {
     let charW = ws.defaultColWidth ?? 8
     if (ws.colWidths?.[colIdx] != null) charW = ws.colWidths[colIdx]
@@ -193,7 +198,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
   table.style.width = "max-content"
   table.style.minWidth = "100%"
   const colCount = (ws.rows[0]?.cells?.length as number) || 0
-  // build colgroup with actual widths from ws.colWidths / colWidthRanges / defaultColWidth
   if (colCount) {
     const colgroup = document.createElement("colgroup")
     for (let c = 0; c < colCount; c++) {
@@ -205,7 +209,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
     }
     table.appendChild(colgroup)
   }
-  // build merge map: "row,col" → { rowspan, colspan } for top-left cells
   const mergeMap = new Map<string, { rs: number; cs: number }>()
   const consumedCells = new Set<string>()
   if (ws.mergeCells?.length) {
@@ -223,7 +226,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
     }
   }
   const freezeCols = ws.freezeCols ?? 0
-  // header row
   const headerRow = ws.rows[0]
   if (headerRow) {
     const tr = document.createElement("tr")
@@ -248,7 +250,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
         th.rowSpan = mg.rs
         th.colSpan = mg.cs
       }
-      // freeze cols: sticky left
       if (freezeCols && cell.col < freezeCols) {
         th.style.position = "sticky"
         let leftPx = 0
@@ -261,7 +262,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
     }
     table.appendChild(tr)
   }
-  // data rows
   for (let r = 1; r < ws.rows.length; r++) {
     const row = ws.rows[r]
     if (!row) continue
@@ -284,7 +284,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
         td.rowSpan = mg.rs
         td.colSpan = mg.cs
       }
-      // freeze cols: sticky left with white background
       if (freezeCols && cell.col < freezeCols) {
         td.style.position = "sticky"
         let leftPx = 0
@@ -295,7 +294,6 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
       }
       tr.appendChild(td)
     }
-    // pad trailing empties
     while (tr.children.length < colCount) {
       const td = document.createElement("td")
       td.style.border = "1px solid #E5E7EB"
@@ -308,7 +306,7 @@ function buildXlsxTable(ws: any, cellText: (ws: any, cell: any) => string): HTML
 
 function XlsxRender(props: { url: string; onFail: () => void }) {
   const [target, setTarget] = createSignal<HTMLDivElement>()
-  let viewer: any | undefined
+  let viewer: OoxmlViewer | undefined
   onCleanup(() => viewer?.destroy?.())
   onMount(async () => {
     const el = target()
@@ -322,7 +320,6 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
         const wb = await mod.XlsxWorkbook.load(buffer.slice(0))
         const ws = await wb.getWorksheet(0)
         const table = buildXlsxTable(ws, wb.cellText.bind(wb))
-        // if HTML table has content, use it; else fallback to WASM
         if (table.rows.length > 1) {
           el.innerHTML = ""
           el.style.display = "flex"
@@ -397,11 +394,11 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
       } catch (e) {
         console.warn("HTML table failed, fallback to WASM", e)
       }
-      // fallback WASM
       // @ts-ignore
       const mod2: any = await import("@silurus/ooxml/xlsx")
-      viewer = new mod2.XlsxViewer(el, { enableTextSelection: true })
-      await viewer.load(buffer)
+      const v: OoxmlViewer = new mod2.XlsxViewer(el, { enableTextSelection: true })
+      await v.load(buffer)
+      viewer = v
     } catch (error) {
       console.error("Document preview failed", error)
       props.onFail()
@@ -424,7 +421,7 @@ function PptxBody(props: { url: string; filename: string }) {
 
 function PptxRender(props: { url: string; onFail: () => void }) {
   const [target, setTarget] = createSignal<HTMLDivElement>()
-  let viewer: any | undefined
+  let viewer: OoxmlViewer | undefined
   onCleanup(() => viewer?.destroy?.())
   onMount(async () => {
     const el = target()
@@ -435,8 +432,9 @@ function PptxRender(props: { url: string; onFail: () => void }) {
       // @ts-ignore
       const mod: any = await import("@silurus/ooxml/pptx")
       const Viewer = mod.PptxScrollViewer ?? mod.PptxViewer
-      viewer = new Viewer(el, { enableTextSelection: true })
-      await viewer.load(buffer)
+      const v: OoxmlViewer = new Viewer(el, { enableTextSelection: true })
+      await v.load(buffer)
+      viewer = v
     } catch (error) {
       console.error("Document preview failed", error)
       props.onFail()

@@ -11,7 +11,7 @@ const MARKDOWN_URL =
   "data:text/markdown;base64,IyBEcmFmdAoKVGhpcyBpcyBhICoqZHJhZnQqKiBtYXJrZG93biBkb2N1bWVudCB3aXRoIGEgbGlzdDoKCi0gYnVsbGV0IG9uZQotIGJ1bGxldCB0d28KCkFuZCBzb21lIGBpbmxpbmUgY29kZWAgcGx1cyBhIFtsaW5rXShodHRwczovL2V4YW1wbGUuY29tKS4K"
 
 function Open(props: {
-  kind: "pdf" | "docx" | "markdown" | "fallback"
+  kind: "pdf" | "docx" | "xlsx" | "pptx" | "markdown" | "fallback"
   filename: string
   url: string
   sourceLabel?: string
