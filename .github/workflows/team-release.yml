@@ -39,8 +39,8 @@ jobs:
           else
             echo "version=0.0.0-team.${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           fi
-          # channel prod for tags, dev otherwise (matches desktop APP_IDS)
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+          # channel prod for tags or manual version (team releases are prod), dev otherwise
+          if [[ "$GITHUB_REF" == refs/tags/v* ]] || [ -n "${{ inputs.version }}" ]; then
             echo "channel=prod" >> $GITHUB_OUTPUT
           else
             echo "channel=dev" >> $GITHUB_OUTPUT
@@ -101,7 +101,7 @@ jobs:
           OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
         timeout-minutes: 60
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
