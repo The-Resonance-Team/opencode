@@ -5,18 +5,17 @@ import { promisify } from "node:util"
 
 import type { Configuration } from "electron-builder"
 
+// ponytail: APP_IDS intentionally duplicated across
+// electron-builder.config.ts, src/main/index.ts, src/main/migrate.ts,
+// src/main/background-cli.ts — build config runs in plain node (no electron
+// import) while runtime runs in Electron main; extracting to a shared
+// package would couple build tooling to runtime for three string literals.
+// Keep duplication until a real shared constant is justified.
+
 const execFileAsync = promisify(execFile)
 const packageDir = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(packageDir, "../..")
 const signScript = path.join(rootDir, "script", "sign-windows.ps1")
-// The Electron 42 packaging update briefly installed Linux launchers/icons under
-// "opencode-desktop". Keep that hidden desktop entry around so existing GNOME/KDE
-// pins still resolve after the canonical app id changes back to ai.opencode.desktop.
-// For the opencode-resonance fork the legacy entry is not installed to avoid
-// colliding with the origin package's /usr/share/applications/opencode-desktop.desktop.
-// ponytail: legacy re-added only if fork needs to migrate its own old pins.
-const legacyDesktopEntry = path.join(packageDir, "resources", "linux", "opencode-desktop.desktop")
-const legacyDesktopEntryFpm = `${legacyDesktopEntry}=/usr/share/applications/opencode-desktop.desktop`
 
 const metainfoFpm = (appId: string) =>
   `${path.join(packageDir, "resources", `${appId}.metainfo.xml`)}=/usr/share/metainfo/${appId}.metainfo.xml`
@@ -99,6 +98,9 @@ const getBase = (appId: string): Configuration => ({
     },
     target: ["nsis"],
     verifyUpdateCodeSignature: false,
+    // ponytail: no explicit guid — electron-builder derives guid from appId
+    // (ai.opencode-resonance.desktop.*), so origin and fork get distinct
+    // Windows uninstall registry keys and per-user install dirs.
   },
   nsis: {
     oneClick: true,
@@ -141,7 +143,11 @@ function getConfig() {
         appId,
         productName: "OpenCode Resonance Beta",
         protocols: { name: "OpenCode Resonance Beta", schemes: ["opencode-resonance"] },
-        publish: { provider: "github", owner: "The-Resonance-Team", repo: "opencode", channel: "latest" },
+        // ponytail: publish to same fork repo but on "beta" channel so prod
+        // "latest" and beta "beta" assets (latest.yml/beta.yml) don't overwrite.
+        // Creates a separate GH release channel; if you prefer a separate repo
+        // use repo: "opencode-beta" with channel: "latest" (mirrors origin).
+        publish: { provider: "github", owner: "The-Resonance-Team", repo: "opencode", channel: "beta" },
         deb: { fpm: [metainfoFpm(appId)] },
         rpm: { packageName: "opencode-resonance-beta", fpm: [metainfoFpm(appId)] },
       }

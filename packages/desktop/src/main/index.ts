@@ -50,6 +50,8 @@ import { cleanupStoreFiles } from "./store-cleanup"
 import { startBackgroundCli } from "./background-cli"
 import { setNativeTranslations } from "./native-translations"
 
+// ponytail: duplicated with electron-builder.config.ts/migrate.ts/background-cli.ts —
+// see electron-builder.config.ts top comment.
 const APP_NAMES: Record<string, string> = {
   dev: "OpenCode Resonance Dev",
   beta: "OpenCode Resonance Beta",

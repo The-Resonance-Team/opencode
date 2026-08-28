@@ -23,6 +23,8 @@ function tauriDir(id: string) {
 
 // The Tauri app identifier changes between dev/beta/prod builds.
 // Fork: ai.opencode-resonance.desktop.*
+// ponytail: duplicated with electron-builder.config.ts and index.ts —
+// kept inline because build config and runtime have different import graphs.
 const TAURI_APP_IDS: Record<string, string> = {
   dev: "ai.opencode-resonance.desktop.dev",
   beta: "ai.opencode-resonance.desktop.beta",

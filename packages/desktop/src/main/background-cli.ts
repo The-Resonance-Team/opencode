@@ -9,6 +9,8 @@ import { app } from "electron"
 const execFileAsync = promisify(execFile)
 const root = dirname(fileURLToPath(import.meta.url))
 const stateHome = process.env.XDG_STATE_HOME
+// ponytail: duplicated with electron-builder.config.ts/index.ts/migrate.ts —
+// see electron-builder.config.ts top comment.
 const desktopStateNames = [
   "ai.opencode-resonance.desktop.dev",
   "ai.opencode-resonance.desktop.beta",
