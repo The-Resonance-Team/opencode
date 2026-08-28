@@ -58,8 +58,14 @@ runs:
         # Workaround for patched peer variants
         # e.g. ./patches/ for standard-openapi
         # https://github.com/oven-sh/bun/issues/28147
+        # Windows: ENOTEMPTY on patch apply due to stale cache/lock (see
+        # 33194904010 windows-latest failure: @ai-sdk/openai-compatible)
         if [ "$RUNNER_OS" = "Windows" ]; then
-          bun install --linker hoisted ${{ inputs.install-flags }}
+          rm -rf node_modules 2>/dev/null || true
+          bun pm cache rm 2>/dev/null || true
+          # also clear the specific patch cache that causes ENOTEMPTY
+          rm -rf "$(bun pm cache 2>/dev/null)/@ai-sdk+openai-compatible*" 2>/dev/null || true
+          bun install --linker hoisted ${{ inputs.install-flags }} || bun install --linker hoisted --force ${{ inputs.install-flags }}
         else
           bun install ${{ inputs.install-flags }}
         fi

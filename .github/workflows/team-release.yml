@@ -32,9 +32,9 @@ jobs:
           - host: macos-latest
             target: aarch64-apple-darwin
             platform_flag: --mac --arm64
-          - host: macos-13
-            target: x86_64-apple-darwin
-            platform_flag: --mac --x64
+          # ponytail: macos-13 x64 intel runner queued 50m+ on GH for team
+          # (GH deprecated macos-13, limited concurrency). Keep arm64 only for
+          # now; re-add x64 as macos-15-intel or universal build when needed.
           - host: windows-latest
             target: x86_64-pc-windows-msvc
             platform_flag: --win
