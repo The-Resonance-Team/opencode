@@ -1,5 +1,5 @@
 name: team-release
-# ponytail: team-owned release on self-hosted (xiro-server-01~08), no signing, build + gh release on tag
+# ponytail: team-owned release on self-hosted (CLI) + GitHub-hosted (desktop win/mac/linux), no signing, build + gh release on tag
 on:
   push:
     tags: ["v*"]
@@ -19,7 +19,114 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  build-desktop:
+    # ponytail: GH-hosted matrix for win/mac/linux (self-hosted is linux-only).
+    # Produces co-installable ai.opencode-resonance.desktop artifacts per OS.
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - host: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            platform_flag: --linux
+          - host: macos-latest
+            target: aarch64-apple-darwin
+            platform_flag: --mac --arm64
+          - host: macos-13
+            target: x86_64-apple-darwin
+            platform_flag: --mac --x64
+          - host: windows-latest
+            target: x86_64-pc-windows-msvc
+            platform_flag: --win
+    runs-on: ${{ matrix.settings.host }}
+    # allow windows-11-arm to be missing (GH may not have it) → continue
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            echo "version=0.0.0-team.${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          fi
+          if [[ "$GITHUB_REF" == refs/tags/v* ]] || [ -n "${{ inputs.version }}" ]; then
+            echo "channel=prod" >> $GITHUB_OUTPUT
+          else
+            echo "channel=dev" >> $GITHUB_OUTPUT
+          fi
+      - name: Cache apt packages (ubuntu)
+        if: contains(matrix.settings.host, 'ubuntu')
+        uses: actions/cache@v4
+        with:
+          path: ~/apt-cache
+          key: ${{ runner.os }}-${{ matrix.settings.target }}-apt-${{ hashFiles('.github/workflows/team-release.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.settings.target }}-apt-
+      - name: Install deps (ubuntu)
+        if: contains(matrix.settings.host, 'ubuntu')
+        run: |
+          mkdir -p ~/apt-cache && chmod -R a+rw ~/apt-cache || true
+          for i in 1 2 3 4 5; do sudo apt-get update -qq && break; echo "retry $i"; sleep $((i*5)); done || true
+          for i in 1 2 3 4 5; do sudo apt-get install -y --no-install-recommends -o dir::cache::archives="$HOME/apt-cache" rpm && break; echo "retry $i"; sleep $((i*5)); done || true
+          sudo chmod -R a+rw ~/apt-cache || true
+      - name: Prepare desktop
+        working-directory: packages/desktop
+        run: bun ./scripts/prepare.ts
+        env:
+          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
+          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
+          RUST_TARGET: ${{ matrix.settings.target }}
+      - name: Build desktop
+        working-directory: packages/desktop
+        run: bun run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
+          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
+          RUST_TARGET: ${{ matrix.settings.target }}
+      - name: Package desktop (no signing)
+        working-directory: packages/desktop
+        run: npx electron-builder ${{ matrix.settings.platform_flag }} --publish never --config electron-builder.config.ts
+        env:
+          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
+        timeout-minutes: 60
+      - name: Create macOS app tar.gz
+        if: runner.os == 'macOS'
+        working-directory: packages/desktop/dist
+        run: |
+          if [[ "${{ matrix.settings.target }}" == "x86_64-apple-darwin" ]]; then APP_DIR="mac"; OUT="opencode-resonance-desktop-mac-x64.app.tar.gz"; else APP_DIR="mac-arm64"; OUT="opencode-resonance-desktop-mac-arm64.app.tar.gz"; fi
+          APP_PATH=$(find "$APP_DIR" -maxdepth 1 -name "*.app" -type d | head -1)
+          if [ -n "$APP_PATH" ]; then tar -czf "$OUT" -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"; fi
+          ls -lh *.app.tar.gz 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencode-desktop-${{ matrix.settings.target }}
+          path: |
+            packages/desktop/dist/*.AppImage
+            packages/desktop/dist/*.deb
+            packages/desktop/dist/*.rpm
+            packages/desktop/dist/*.dmg
+            packages/desktop/dist/*.zip
+            packages/desktop/dist/*.exe
+            packages/desktop/dist/*.blockmap
+            packages/desktop/dist/*.app.tar.gz
+            packages/desktop/dist/latest*.yml
+          if-no-files-found: ignore
+          retention-days: 7
+
   release:
+    needs: [build-desktop]
+    if: always() && !cancelled()
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +146,6 @@ jobs:
           else
             echo "version=0.0.0-team.${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           fi
-          # channel prod for tags or manual version (team releases are prod), dev otherwise
           if [[ "$GITHUB_REF" == refs/tags/v* ]] || [ -n "${{ inputs.version }}" ]; then
             echo "channel=prod" >> $GITHUB_OUTPUT
           else
@@ -53,78 +159,35 @@ jobs:
           ./packages/cli/script/build.ts || true
         env:
           OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
-      - name: Cache apt packages (desktop linux)
-        uses: actions/cache@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: ~/apt-cache
-          key: ${{ runner.os }}-apt-rpm-${{ hashFiles('.github/workflows/team-release.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-rpm-
-      - name: Install desktop build deps (ubuntu)
-        # ponytail: self-hosted runners share /var/lib/apt/lists, concurrent
-        # apt-get update would hit "Could not get lock" → retry with backoff.
-        run: |
-          mkdir -p ~/apt-cache && chmod -R a+rw ~/apt-cache || true
-          for i in 1 2 3 4 5; do
-            sudo apt-get update -qq && break
-            echo "apt-get update lock held, retry $i/5"
-            sleep $((i*5))
-          done || true
-          for i in 1 2 3 4 5; do
-            sudo apt-get install -y --no-install-recommends -o dir::cache::archives="$HOME/apt-cache" rpm && break
-            echo "apt-get install lock held, retry $i/5"
-            sleep $((i*5))
-          done || true
-          sudo chmod -R a+rw ~/apt-cache || true
-      - name: Prepare desktop
-        working-directory: packages/desktop
-        run: bun ./scripts/prepare.ts
-        env:
-          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
-          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
-      - name: Build desktop
-        working-directory: packages/desktop
-        run: bun run build
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
-          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
-          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
-      - name: Package desktop (linux, no signing)
-        working-directory: packages/desktop
-        # ponytail: self-hosted is linux only, so only --linux is possible without
-        # macOS/Windows runners. Artifacts are co-installable thanks to
-        # ai.opencode-resonance.desktop appId (electron-builder.config.ts).
-        # For full cross-platform (mac dmg, win exe) add a matrix job like
-        # publish.yml build-electron or use GitHub-hosted runners per OS.
-        run: npx electron-builder --linux --publish never --config electron-builder.config.ts
-        env:
-          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
-        timeout-minutes: 60
+          pattern: opencode-desktop-*
+          path: /tmp/desktop
+          merge-multiple: true
+      - name: List desktop artifacts
+        run: ls -R /tmp/desktop 2>/dev/null | head -n 100; ls -lh /tmp/desktop/* 2>/dev/null | head -n 50
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           shopt -s nullglob
-          # ponytail: desktop assets have unique names (AppImage/deb/rpm), CLI
-          # dist contains colliding basenames (multiple package.json/opencode).
-          # Upload only desktop to release; CLI remains as workflow artifact
-          # (actions/upload-artifact) to avoid 404/duplicate-asset errors.
-          mapfile -t desktop_files < <(find packages/desktop/dist -maxdepth 1 -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "latest*.yml" -o -name "*.blockmap" \) 2>/dev/null || true)
-          echo "Found ${#desktop_files[@]} desktop files"
-          printf '  %s\n' "${desktop_files[@]}" | head -n 30
+          mapfile -t desktop_files < <(find /tmp/desktop -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.zip" -o -name "*.exe" -o -name "*.blockmap" -o -name "*.app.tar.gz" -o -name "latest*.yml" \) 2>/dev/null || true)
+          # also include locally built linux fallback if matrix didn't produce (self-hosted linux)
+          mapfile -t fallback < <(find packages/desktop/dist -maxdepth 1 -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) 2>/dev/null || true)
+          all_files=("${desktop_files[@]}" "${fallback[@]}")
+          # dedupe by basename (gh release upload uses basename)
+          declare -A seen; uniq=()
+          for f in "${all_files[@]}"; do b=$(basename "$f"); if [[ -z "${seen[$b]}" ]]; then seen[$b]=1; uniq+=("$f"); fi; done
+          all_files=("${uniq[@]}")
+          echo "Found ${#desktop_files[@]} matrix + ${#fallback[@]} fallback = ${#all_files[@]} unique desktop files"
+          printf '  %s\n' "${all_files[@]}" | head -n 30
           tag="v${{ steps.ver.outputs.version }}"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release $tag exists, uploading assets"
-            if (( ${#desktop_files[@]} )); then
-              gh release upload "$tag" "${desktop_files[@]}" --clobber
-            fi
+            if (( ${#all_files[@]} )); then gh release upload "$tag" "${all_files[@]}" --clobber; fi
           else
-            if (( ${#desktop_files[@]} )); then
-              gh release create "$tag" --title "$tag (team)" --generate-notes "${desktop_files[@]}"
-            else
-              gh release create "$tag" --title "$tag (team)" --generate-notes
-            fi
+            if (( ${#all_files[@]} )); then gh release create "$tag" --title "$tag (team)" --generate-notes "${all_files[@]}"; else gh release create "$tag" --title "$tag (team)" --generate-notes; fi
           fi
       - uses: actions/upload-artifact@v4
         with:
@@ -132,9 +195,6 @@ jobs:
           path: |
             packages/opencode/dist/*
             packages/cli/dist/*
-            packages/desktop/dist/*.AppImage
-            packages/desktop/dist/*.deb
-            packages/desktop/dist/*.rpm
-            packages/desktop/dist/latest*.yml
+            /tmp/desktop/*
           if-no-files-found: ignore
           retention-days: 30
