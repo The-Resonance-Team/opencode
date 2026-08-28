@@ -26,6 +26,9 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-bun
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
       - name: Resolve version
         id: ver
         run: |
@@ -36,6 +39,12 @@ jobs:
           else
             echo "version=0.0.0-team.${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           fi
+          # channel prod for tags, dev otherwise (matches desktop APP_IDS)
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "channel=prod" >> $GITHUB_OUTPUT
+          else
+            echo "channel=dev" >> $GITHUB_OUTPUT
+          fi
       - name: Generate SDK
         run: bun turbo build --filter=@opencode-ai/sdk --filter=@opencode-ai/client
       - name: Build CLI
@@ -44,21 +53,74 @@ jobs:
           ./packages/cli/script/build.ts || true
         env:
           OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
+      - name: Cache apt packages (desktop linux)
+        uses: actions/cache@v4
+        with:
+          path: ~/apt-cache
+          key: ${{ runner.os }}-apt-rpm-${{ hashFiles('.github/workflows/team-release.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-rpm-
+      - name: Install desktop build deps (ubuntu)
+        run: |
+          mkdir -p ~/apt-cache && chmod -R a+rw ~/apt-cache
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends -o dir::cache::archives="$HOME/apt-cache" rpm || true
+          sudo chmod -R a+rw ~/apt-cache
+      - name: Prepare desktop
+        working-directory: packages/desktop
+        run: bun ./scripts/prepare.ts
+        env:
+          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
+          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
+      - name: Build desktop
+        working-directory: packages/desktop
+        run: bun run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
+          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
+      - name: Package desktop (linux, no signing)
+        working-directory: packages/desktop
+        # ponytail: self-hosted is linux only, so only --linux is possible without
+        # macOS/Windows runners. Artifacts are co-installable thanks to
+        # ai.opencode-resonance.desktop appId (electron-builder.config.ts).
+        # For full cross-platform (mac dmg, win exe) add a matrix job like
+        # publish.yml build-electron or use GitHub-hosted runners per OS.
+        run: npx electron-builder --linux --publish never --config electron-builder.config.ts
+        env:
+          OPENCODE_CHANNEL: ${{ steps.ver.outputs.channel }}
+        timeout-minutes: 60
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "v${{ steps.ver.outputs.version }}" \
-            --title "v${{ steps.ver.outputs.version }} (team)" \
-            --generate-notes \
-            packages/opencode/dist/* packages/cli/dist/* 2>/dev/null || \
-          gh release create "v${{ steps.ver.outputs.version }}" --title "v${{ steps.ver.outputs.version }} (team)" --generate-notes
+          shopt -s nullglob
+          cli_files=(packages/opencode/dist/* packages/cli/dist/*)
+          desktop_files=(packages/desktop/dist/*.{AppImage,deb,rpm} packages/desktop/dist/latest*.yml)
+          all_files=("${cli_files[@]}" "${desktop_files[@]}")
+          tag="v${{ steps.ver.outputs.version }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag exists, uploading assets"
+            if (( ${#all_files[@]} )); then
+              gh release upload "$tag" "${all_files[@]}" --clobber
+            fi
+          else
+            if (( ${#all_files[@]} )); then
+              gh release create "$tag" --title "$tag (team)" --generate-notes "${all_files[@]}"
+            else
+              gh release create "$tag" --title "$tag (team)" --generate-notes
+            fi
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: team-release-${{ steps.ver.outputs.version }}
           path: |
             packages/opencode/dist/*
             packages/cli/dist/*
+            packages/desktop/dist/*.AppImage
+            packages/desktop/dist/*.deb
+            packages/desktop/dist/*.rpm
+            packages/desktop/dist/latest*.yml
           if-no-files-found: ignore
           retention-days: 30
