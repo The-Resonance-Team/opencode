@@ -22,13 +22,14 @@ function tauriDir(id: string) {
 }
 
 // The Tauri app identifier changes between dev/beta/prod builds.
+// Fork: ai.opencode-resonance.desktop.*
 const TAURI_APP_IDS: Record<string, string> = {
-  dev: "ai.opencode.desktop.dev",
-  beta: "ai.opencode.desktop.beta",
-  prod: "ai.opencode.desktop",
+  dev: "ai.opencode-resonance.desktop.dev",
+  beta: "ai.opencode-resonance.desktop.beta",
+  prod: "ai.opencode-resonance.desktop",
 }
 function tauriAppId() {
-  return app.isPackaged ? TAURI_APP_IDS[CHANNEL] : "ai.opencode.desktop.dev"
+  return app.isPackaged ? TAURI_APP_IDS[CHANNEL] : "ai.opencode-resonance.desktop.dev"
 }
 
 // Migrate a single Tauri .dat file into the corresponding electron-store.
