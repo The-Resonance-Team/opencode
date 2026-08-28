@@ -32,6 +32,8 @@ jobs:
           else
             echo "version=0.0.0-team.${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           fi
+      - name: Generate SDK
+        run: bun turbo build --filter=@opencode-ai/sdk --filter=@opencode-ai/client
       - name: Build CLI
         run: |
           ./packages/opencode/script/build.ts || true
