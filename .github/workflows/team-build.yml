@@ -1,0 +1,43 @@
+name: team-build
+# ponytail: minimal team CI – ubuntu-latest, no blacksmith, covers main (team default)
+on:
+  push:
+    branches: [main, dev, document-preview]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun
+      - name: Build
+        run: bun turbo build
+      - name: Typecheck
+        run: bun turbo typecheck
+      - name: Build CLI (team)
+        run: |
+          ./packages/opencode/script/build.ts || echo "cli build skipped"
+          ./packages/cli/script/build.ts || echo "preview cli build skipped"
+        env:
+          OPENCODE_VERSION: 0.0.0-team
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: team-build-${{ github.sha }}
+          path: |
+            packages/opencode/dist/*
+            packages/cli/dist/*
+          if-no-files-found: ignore
+          retention-days: 7
