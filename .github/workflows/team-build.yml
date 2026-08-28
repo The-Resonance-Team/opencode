@@ -41,11 +41,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-apt-rpm-
       - name: Install desktop build deps (ubuntu)
+        # ponytail: self-hosted runners share /var/lib/apt/lists lock, retry on contention
         run: |
-          mkdir -p ~/apt-cache && chmod -R a+rw ~/apt-cache
-          sudo apt-get update -qq || true
-          sudo apt-get install -y --no-install-recommends -o dir::cache::archives="$HOME/apt-cache" rpm || true
-          sudo chmod -R a+rw ~/apt-cache
+          mkdir -p ~/apt-cache && chmod -R a+rw ~/apt-cache || true
+          for i in 1 2 3 4 5; do
+            sudo apt-get update -qq && break
+            echo "apt-get update lock held, retry $i/5"
+            sleep $((i*5))
+          done || true
+          for i in 1 2 3 4 5; do
+            sudo apt-get install -y --no-install-recommends -o dir::cache::archives="$HOME/apt-cache" rpm && break
+            echo "apt-get install lock held, retry $i/5"
+            sleep $((i*5))
+          done || true
+          sudo chmod -R a+rw ~/apt-cache || true
       - name: Prepare desktop
         working-directory: packages/desktop
         run: bun ./scripts/prepare.ts || echo "prepare skipped"
