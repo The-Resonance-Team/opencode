@@ -1,0 +1,58 @@
+name: team-release
+# ponytail: team-owned release – no blacksmith, no signing, just build + gh release on tag
+on:
+  push:
+    tags: ["v*"]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Override version (e.g. 1.2.3-team.1)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            echo "version=0.0.0-team.${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          fi
+      - name: Build CLI
+        run: |
+          ./packages/opencode/script/build.ts || true
+          ./packages/cli/script/build.ts || true
+        env:
+          OPENCODE_VERSION: ${{ steps.ver.outputs.version }}
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.ver.outputs.version }}" \
+            --title "v${{ steps.ver.outputs.version }} (team)" \
+            --generate-notes \
+            packages/opencode/dist/* packages/cli/dist/* 2>/dev/null || \
+          gh release create "v${{ steps.ver.outputs.version }}" --title "v${{ steps.ver.outputs.version }} (team)" --generate-notes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: team-release-${{ steps.ver.outputs.version }}
+          path: |
+            packages/opencode/dist/*
+            packages/cli/dist/*
+          if-no-files-found: ignore
+          retention-days: 30
