@@ -106,9 +106,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           shopt -s nullglob
-          cli_files=(packages/opencode/dist/* packages/cli/dist/*)
-          desktop_files=(packages/desktop/dist/*.{AppImage,deb,rpm} packages/desktop/dist/latest*.yml)
+          # ponytail: gh release upload cannot handle directories (dist/* are dirs
+          # like opencode-linux-x64/bin/opencode). Collect only files.
+          mapfile -t cli_files < <(find packages/opencode/dist packages/cli/dist -type f 2>/dev/null || true)
+          mapfile -t desktop_files < <(find packages/desktop/dist -maxdepth 1 -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "latest*.yml" -o -name "*.blockmap" \) 2>/dev/null || true)
           all_files=("${cli_files[@]}" "${desktop_files[@]}")
+          echo "Found ${#cli_files[@]} CLI files, ${#desktop_files[@]} desktop files"
+          printf '  %s\n' "${all_files[@]}" | head -n 30
           tag="v${{ steps.ver.outputs.version }}"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release $tag exists, uploading assets"
