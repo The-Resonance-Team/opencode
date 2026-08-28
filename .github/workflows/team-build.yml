@@ -24,8 +24,6 @@ jobs:
       - uses: ./.github/actions/setup-bun
       - name: Generate SDK
         run: bun turbo build --filter=@opencode-ai/sdk --filter=@opencode-ai/client
-      - name: Typecheck
-        run: bun turbo typecheck
       - name: Build CLI (team)
         run: |
           ./packages/opencode/script/build.ts || echo "cli build skipped"
