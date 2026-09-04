@@ -388,6 +388,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.title": "Tệp đính kèm không được hỗ trợ",
   "prompt.toast.pasteUnsupported.description": "Chỉ có thể đính kèm hình ảnh, tệp PDF hoặc tệp văn bản ở đây.",
   "prompt.toast.attachmentDuplicate.title": "Tệp này đã được tải lên",
+  "prompt.toast.attachmentTooLarge.title": "Tệp này lớn hơn giới hạn tệp đính kèm 10 MiB",
   "prompt.toast.modelAgentRequired.title": "Chọn tác nhân và mô hình",
   "prompt.toast.modelAgentRequired.description": "Chọn một tác nhân và mô hình trước khi gửi lời nhắc.",
   "prompt.toast.worktreeCreateFailed.title": "Không tạo được worktree",

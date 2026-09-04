@@ -65,6 +65,8 @@ export function OfficePreview(props: OfficePreviewProps) {
     const name = store.result.filename.toLowerCase()
     if (name.endsWith(".pdf")) return "pdf"
     if (name.endsWith(".docx")) return "docx"
+    if (name.endsWith(".xlsx")) return "xlsx"
+    if (name.endsWith(".pptx")) return "pptx"
     return "fallback"
   })
 
