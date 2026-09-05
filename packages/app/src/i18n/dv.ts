@@ -317,6 +317,7 @@ export const dict = {
   "common.goForward": "ކުރިއަށް ދަތުރުކޮށްލާށެވެ",
   "common.loading": "ލޯޑިންގ",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Toggle debug tools",
   "common.cancel": "ކެންސަލް",
   "common.clear": "ސާފުކޮށް",
   "common.open": "ހުޅުވުން",
@@ -387,6 +388,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.description":
     "މިތަނުގައި އެޓޭޗް ކުރެވޭނީ ހަމައެކަނި ތަސްވީރު، PDFs، ނުވަތަ ޓެކްސްޓް ފައިލްތަކެވެ.",
   "prompt.toast.attachmentDuplicate.title": "މި ފައިލް މިހާރު ވަނީ އަޕްލޯޑްކޮށްފައެވެ",
+  "prompt.toast.attachmentTooLarge.title": "This file is larger than the 10 MiB attachment limit",
   "prompt.toast.modelAgentRequired.title": "އޭޖެންޓަކާއި މޮޑެލްއެއް ހޮވުން",
   "prompt.toast.modelAgentRequired.description": "ޕްރޮމްޕްޓެއް ފޮނުވުމުގެ ކުރިން އޭޖެންޓަކާއި މޮޑެލްއެއް ހޮވުން.",
   "prompt.toast.worktreeCreateFailed.title": "ވޯކްޓްރީ އުފެއްދުމަށް ނާކާމިޔާބުވިއެވެ",

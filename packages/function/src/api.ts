@@ -7,6 +7,13 @@ import { Octokit } from "@octokit/rest"
 import { Resource } from "sst"
 import { parseRepositoryClaim } from "./github"
 
+// Typed DO RPC error: Durable Object stubs serialize errors by message.
+export class ShareCollisionError extends Error {
+  constructor() {
+    super("ShareCollisionError: session id collision")
+  }
+}
+
 type Env = {
   SYNC_SERVER: DurableObjectNamespace<SyncServer>
   Bucket: R2Bucket
@@ -67,9 +74,16 @@ export class SyncServer extends DurableObject<Env> {
   }
 
   public async share(sessionID: string) {
-    let secret = await this.getSecret()
-    if (secret) return secret
-    secret = randomUUID()
+    // The DO name derives from the session id's last 8 chars, so two different
+    // sessions can land on the same stub. Only the session that first claimed
+    // the share may read its secret; a collision fails loudly instead of
+    // handing one tenant another's secret.
+    const stored = await this.getSessionID()
+    if (stored !== undefined) {
+      if (stored !== sessionID) throw new ShareCollisionError()
+      return this.getSecret()
+    }
+    const secret = randomUUID()
 
     await this.ctx.storage.put("secret", secret)
     await this.ctx.storage.put("sessionID", sessionID)
@@ -117,12 +131,22 @@ export class SyncServer extends DurableObject<Env> {
 export default new Hono<{ Bindings: Env }>()
   .get("/", (c) => c.text("Hello, world!"))
   .post("/share_create", async (c) => {
-    const body = await c.req.json<{ sessionID: string }>()
-    const sessionID = body.sessionID
+    const body = await c.req.json<{ sessionID: string }>().catch(() => undefined)
+    const sessionID = body?.sessionID
+    if (typeof sessionID !== "string" || sessionID.length === 0)
+      return c.json({ error: "sessionID is required" }, 400)
     const short = SyncServer.shortName(sessionID)
     const id = c.env.SYNC_SERVER.idFromName(short)
     const stub = c.env.SYNC_SERVER.get(id)
-    const secret = await stub.share(sessionID)
+    // ponytail: unauthenticated endpoint by design (share creation is keyed on
+    // unpredictable session ids); add Turnstile/KV rate limiting if abuse shows
+    // up in the sync worker metrics.
+    const secret = await stub.share(sessionID).catch((error: unknown) => {
+      if (error instanceof ShareCollisionError || (error instanceof Error && error.message.includes("ShareCollisionError")))
+        return null
+      throw error
+    })
+    if (secret === null) return c.json({ error: "Share id collision" }, 409)
     return c.json({
       secret,
       url: `https://${c.env.WEB_DOMAIN}/s/${short}`,
@@ -206,6 +230,7 @@ export default new Hono<{ Bindings: Env }>()
     const body = (await c.req.json()) as {
       challenge?: string
       event?: {
+        header?: { token?: string }
         message?: {
           message_id?: string
           root_id?: string
@@ -215,9 +240,16 @@ export default new Hono<{ Bindings: Env }>()
         }
       }
     }
-    console.log(JSON.stringify(body, null, 2))
+    // Message content is end-user PII; log only the routing ids.
+    console.log("feishu event", { id: body.event?.message?.message_id, challenge: body.challenge !== undefined })
     const challenge = body.challenge
     if (challenge) return c.json({ challenge })
+
+    // Once FEISHU_VERIFICATION_TOKEN is set the relay is fail-closed: forged
+    // posts can no longer inject text into the Discord support channel.
+    const expectedToken = Resource.FEISHU_VERIFICATION_TOKEN?.value
+    if (!expectedToken) console.warn("FEISHU_VERIFICATION_TOKEN unset: /feishu accepts unauthenticated posts")
+    if (expectedToken && body.event?.header?.token !== expectedToken) return c.json({ error: "invalid token" }, 401)
 
     const content = body.event?.message?.content
     const parsed =

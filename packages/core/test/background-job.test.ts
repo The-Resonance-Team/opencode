@@ -103,4 +103,20 @@ describe("BackgroundJob", () => {
       expect((yield* jobs.get(job.id))?.status).toBe("running")
     }),
   )
+  it.live("evicts the oldest terminal jobs past the retained cap", () =>
+    Effect.gen(function* () {
+      const jobs = yield* BackgroundJob.Service
+      const ids: string[] = []
+      for (let i = 0; i < 102; i++) {
+        const job = yield* jobs.start({ type: "test", metadata: { durable: false }, run: Effect.succeed("done") })
+        ids.push(job.id)
+        yield* jobs.wait({ id: job.id })
+      }
+      const listed = yield* jobs.list()
+      const retained = new Set(listed.map((job) => job.id))
+      expect(retained.size).toBeLessThanOrEqual(100)
+      expect(retained.has(ids[0])).toBe(false)
+      expect(retained.has(ids[ids.length - 1])).toBe(true)
+    }).pipe(Effect.provide(jobsLayer)),
+  )
 })

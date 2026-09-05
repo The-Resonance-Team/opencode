@@ -1,6 +1,7 @@
 export * as ServerAuth from "./auth"
 
 import { Config as EffectConfig, Context, Effect, Layer, Option, Redacted } from "effect"
+import { timingSafeEqual } from "node:crypto"
 
 export type Credentials = {
   password?: string
@@ -42,11 +43,12 @@ export function required(config: Info) {
 }
 
 export function authorized(credentials: DecodedCredentials, config: Info) {
-  return (
-    Option.isSome(config.password) &&
-    credentials.username === config.username &&
-    Redacted.value(credentials.password) === config.password.value
-  )
+  if (Option.isNone(config.password) || credentials.username !== config.username) return false
+  // Constant-time compare: the password arrives over the network, string !==
+  // leaks it byte by byte to timing probes.
+  const expected = Buffer.from(config.password.value)
+  const actual = Buffer.from(Redacted.value(credentials.password))
+  return actual.length === expected.length && timingSafeEqual(actual, expected)
 }
 
 export function header(credentials?: Credentials) {

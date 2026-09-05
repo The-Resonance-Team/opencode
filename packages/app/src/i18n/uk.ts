@@ -337,6 +337,7 @@ export const dict = {
   "common.goForward": "Вперед",
   "common.loading": "Завантаження",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Перемкнути інструменти налагодження",
   "common.cancel": "Скасувати",
   "common.clear": "Очистити",
   "common.open": "Відкрити",
@@ -409,6 +410,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "Непідтримуване вкладення",
   "prompt.toast.attachmentDuplicate.title": "Цей файл уже завантажено",
+  "prompt.toast.attachmentTooLarge.title": "Цей файл перевищує обмеження вкладення 10 МіБ",
   "prompt.toast.pasteUnsupported.description": "Сюди можна прикріплювати лише зображення, PDF або текстові файли.",
   "prompt.toast.modelAgentRequired.title": "Виберіть агента та модель",
   "prompt.toast.modelAgentRequired.description": "Виберіть агента та модель перед надсиланням запиту.",

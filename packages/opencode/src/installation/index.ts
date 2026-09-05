@@ -44,7 +44,7 @@ export function userAgent(client = "cli") {
 
 export const USER_AGENT = userAgent()
 
-export function isPreview() {
+function isPreview() {
   return InstallationChannel !== "latest"
 }
 

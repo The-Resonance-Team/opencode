@@ -208,12 +208,6 @@ export function createMainWindow(id: string = randomUUID()) {
   wireWindowRecovery(win, id)
   wireNavigationPolicy(win)
 
-  win.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-    const { requestHeaders } = details
-    upsertKeyValue(requestHeaders, "Access-Control-Allow-Origin", ["*"])
-    callback({ requestHeaders })
-  })
-
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     const { responseHeaders = {} } = details
     addRendererHeaders(details.url, responseHeaders)

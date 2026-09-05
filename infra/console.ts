@@ -1,5 +1,5 @@
 import { deployAws, domain } from "./stage"
-import { EMAILOCTOPUS_API_KEY } from "./app"
+import { ADMIN_SECRET, EMAILOCTOPUS_API_KEY } from "./app"
 import { SECRET } from "./secret"
 
 const lake = deployAws ? await import("./lake") : undefined
@@ -316,6 +316,6 @@ new sst.cloudflare.x.SolidStart("Console", {
 
 export const stat = new sst.cloudflare.Worker("Stat", {
   handler: "packages/console/function/src/stat.ts",
-  link: [database],
+  link: [database, ADMIN_SECRET],
   url: true,
 })

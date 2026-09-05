@@ -165,6 +165,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       const state = {
         pending: false,
       }
+      let readFailed = false
 
       function save() {
         if (!modelStore.ready) {
@@ -188,10 +189,15 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (typeof value.variant === "object" && value.variant !== null)
             setModelStore("variant", value.variant as Record<string, string | undefined>)
         })
-        .catch(() => {})
+        .catch((error) => {
+          // A corrupt or missing state file must not auto-overwrite on load:
+          // only an explicit user change may rewrite it.
+          console.error("model state read failed", error)
+          readFailed = true
+        })
         .finally(() => {
           setModelStore("ready", true)
-          if (state.pending) save()
+          if (state.pending && !readFailed) save()
         })
 
       const fallbackModel = createMemo(() => {
@@ -421,6 +427,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       const state = {
         pending: false,
       }
+      let readFailed = false
 
       function save() {
         if (!sessionStore.ready) {
@@ -443,10 +450,13 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
               pinned.filter((item): item is string => typeof item === "string"),
             )
         })
-        .catch(() => {})
+        .catch((error) => {
+          console.error("session state read failed", error)
+          readFailed = true
+        })
         .finally(() => {
           setSessionStore("ready", true)
-          if (state.pending) save()
+          if (state.pending && !readFailed) save()
         })
 
       const slots = createMemo(() => {

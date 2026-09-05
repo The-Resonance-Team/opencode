@@ -63,10 +63,7 @@ export function SettingsSection() {
   })
 
   function show() {
-    while (true) {
-      submission.clear()
-      if (!submission.result) break
-    }
+    for (let attempts = 0; attempts < 3 && submission.result; attempts++) submission.clear()
     setStore("show", true)
     input.focus()
   }

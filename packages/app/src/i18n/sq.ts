@@ -312,6 +312,7 @@ export const dict = {
   "common.goForward": "Navigoni përpara",
   "common.loading": "Po ngarkohet",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Kalo mjetet e korrigjimit",
   "common.cancel": "Anulo",
   "common.clear": "E qartë",
   "common.open": "Hapur",
@@ -382,6 +383,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.description":
     "Këtu mund të bashkëngjiten vetëm imazhe, skedarë PDF ose skedarë teksti.",
   "prompt.toast.attachmentDuplicate.title": "Ky skedar tashmë është ngarkuar",
+  "prompt.toast.attachmentTooLarge.title": "Ky skedar është më i madh se kufiri i bashkëngjitjes 10 MiB",
   "prompt.toast.modelAgentRequired.title": "Zgjidhni një agjent dhe model",
   "prompt.toast.modelAgentRequired.description": "Zgjidhni një agjent dhe model përpara se të dërgoni një kërkesë.",
   "prompt.toast.worktreeCreateFailed.title": "Krijimi i pemës së punës dështoi",

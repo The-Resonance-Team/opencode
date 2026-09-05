@@ -112,10 +112,7 @@ function MemberRow(props: {
   })
 
   function show() {
-    while (true) {
-      submission.clear()
-      if (!submission.result) break
-    }
+    for (let attempts = 0; attempts < 3 && submission.result; attempts++) submission.clear()
     setStore("editing", true)
     setStore("selectedRole", props.member.role)
     setStore("limit", props.member.monthlyLimit != null ? String(props.member.monthlyLimit) : "")
@@ -250,10 +247,7 @@ export function MemberSection() {
   })
 
   function show() {
-    while (true) {
-      submission.clear()
-      if (!submission.result) break
-    }
+    for (let attempts = 0; attempts < 3 && submission.result; attempts++) submission.clear()
     setStore("show", true)
     setStore("selectedRole", "member")
     setStore("limit", "")

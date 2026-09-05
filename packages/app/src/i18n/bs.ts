@@ -337,6 +337,7 @@ export const dict = {
   "common.goForward": "Naprijed",
   "common.loading": "Učitavanje",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Uključi/isključi alate za otklanjanje grešaka",
   "common.cancel": "Otkaži",
   "common.clear": "Očisti",
   "common.connect": "Poveži",
@@ -408,6 +409,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "Nepodržan prilog",
   "prompt.toast.attachmentDuplicate.title": "Ova datoteka je već učitana",
+  "prompt.toast.attachmentTooLarge.title": "Ova datoteka je veća od ograničenja priloženih datoteka od 10 MiB",
   "prompt.toast.pasteUnsupported.description": "Ovdje se mogu priložiti samo slike, PDF-ovi ili tekstualne datoteke.",
   "prompt.toast.modelAgentRequired.title": "Odaberi agenta i model",
   "prompt.toast.modelAgentRequired.description": "Odaberi agenta i model prije slanja upita.",

@@ -312,6 +312,7 @@ export const dict = {
   "common.goForward": "Vooruit navigeren",
   "common.loading": "Laden",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Foutopsporingstools schakelen",
   "common.cancel": "Annuleer",
   "common.clear": "Wissen",
   "common.open": "Openen",
@@ -382,6 +383,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.description":
     "Hier kunnen alleen afbeeldingen, pdf's of tekstbestanden worden bijgevoegd.",
   "prompt.toast.attachmentDuplicate.title": "Dit bestand is al geüpload",
+  "prompt.toast.attachmentTooLarge.title": "Dit bestand is groter dan de bijlagelimiet van 10 MiB",
   "prompt.toast.modelAgentRequired.title": "Selecteer een agent en model",
   "prompt.toast.modelAgentRequired.description": "Kies een agent en model voordat je een prompt verzendt.",
   "prompt.toast.worktreeCreateFailed.title": "Kan worktree niet maken",

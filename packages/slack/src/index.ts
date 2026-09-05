@@ -19,7 +19,22 @@ const opencode = await createOpencode({
 })
 console.log("✅ Opencode server ready")
 
+// ponytail: FIFO-capped session handles; the server-side sessions survive
+// eviction, only the live tool-update tracking for the evicted thread is lost.
+const MAX_SESSIONS = 100
 const sessions = new Map<string, { client: any; server: any; sessionId: string; channel: string; thread: string }>()
+function rememberSession(key: string, session: { client: any; server: any; sessionId: string; channel: string; thread: string }) {
+  sessions.set(key, session)
+  while (sessions.size > MAX_SESSIONS) sessions.delete(sessions.keys().next().value!)
+}
+
+// Deny-by-default once configured; unset means the bot answers anyone who can
+// DM the app, which is only safe on a private workspace.
+const allowedUsers = (process.env.SLACK_ALLOWED_USER_IDS ?? "")
+  .split(",")
+  .map((id) => id.trim())
+  .filter(Boolean)
+if (allowedUsers.length === 0) console.warn("SLACK_ALLOWED_USER_IDS is unset: anyone who can message the bot runs prompts with tools on this host")
 void (async () => {
   const events = await opencode.client.event.subscribe()
   for await (const event of events.stream) {
@@ -47,16 +62,17 @@ async function handleToolUpdate(part: ToolPart, channel: string, thread: string)
       thread_ts: thread,
       text: toolMessage,
     })
-    .catch(() => {})
+    .catch((error) => console.error("slack tool-update post failed", error))
 }
 
-app.use(async ({ next, context }) => {
-  console.log("📡 Raw Slack event:", JSON.stringify(context, null, 2))
+app.use(async ({ next }) => {
   await next()
 })
 
 app.message(async ({ message, say }) => {
-  console.log("📨 Received message event:", JSON.stringify(message, null, 2))
+  // User message content is PII: log only routing ids.
+  console.log("📨 message event", { channel: message.channel, ts: message.ts })
+  if (allowedUsers.length > 0 && !allowedUsers.includes(String((message as { user?: string }).user ?? ""))) return
 
   if (message.subtype || !("text" in message) || !message.text) {
     console.log("⏭️ Skipping message - no text or has subtype")
@@ -91,7 +107,7 @@ app.message(async ({ message, say }) => {
     console.log("✅ Created opencode session:", createResult.data.id)
 
     session = { client, server, sessionId: createResult.data.id, channel, thread }
-    sessions.set(sessionKey, session)
+    rememberSession(sessionKey, session)
 
     const shareResult = await client.session.share({ path: { id: createResult.data.id } })
     if (!shareResult.error && shareResult.data) {
@@ -101,13 +117,13 @@ app.message(async ({ message, say }) => {
     }
   }
 
-  console.log("📝 Sending to opencode:", message.text)
+  console.log("📝 sending to opencode", { session: session.sessionId })
   const result = await session.client.session.prompt({
     path: { id: session.sessionId },
     body: { parts: [{ type: "text", text: message.text }] },
   })
 
-  console.log("📤 Opencode response:", JSON.stringify(result, null, 2))
+  if (result.error) console.error("opencode prompt failed", { session: session.sessionId })
 
   if (result.error) {
     console.error("❌ Failed to send message:", result.error)
@@ -129,15 +145,13 @@ app.message(async ({ message, say }) => {
       .join("\n") ||
     "I received your message but didn't have a response."
 
-  console.log("💬 Sending response:", responseText)
-
   // Send main response (tool updates will come via live events)
   await say({ text: responseText, thread_ts: thread })
 })
 
 app.command("/test", async ({ command, ack, say }) => {
   await ack()
-  console.log("🧪 Test command received:", JSON.stringify(command, null, 2))
+  console.log("🧪 test command", { channel: command.channel_id })
   await say("🤖 Bot is working! I can hear you loud and clear.")
 })
 

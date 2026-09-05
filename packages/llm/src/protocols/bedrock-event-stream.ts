@@ -4,6 +4,8 @@ import { Effect, Stream } from "effect"
 import type { Framing } from "../route/framing"
 import { ProviderShared } from "./shared"
 
+const MAX_FRAME_BYTES = 16 * 1024 * 1024
+
 // Bedrock streams responses using the AWS event stream binary protocol — each
 // frame is `[length:4][headers-length:4][prelude-crc:4][headers][payload][crc:4]`.
 // We use `@smithy/eventstream-codec` to validate framing and CRCs, then
@@ -39,6 +41,12 @@ const consumeFrames = (route: string) => (state: FrameBufferState, chunk: Uint8A
     while (cursor.buffer.length - cursor.offset >= 4) {
       const view = cursor.buffer.subarray(cursor.offset)
       const totalLength = new DataView(view.buffer, view.byteOffset, view.byteLength).getUint32(0, false)
+      // totalLength is attacker-declared before the CRC covers it; cap it so a
+      // buggy or hostile provider cannot make us buffer a 4 GiB frame.
+      if (totalLength > MAX_FRAME_BYTES)
+        return yield* Effect.fail(
+          ProviderShared.eventError(route, `Bedrock Converse event-stream frame exceeds ${MAX_FRAME_BYTES} bytes`),
+        )
       if (view.length < totalLength) break
 
       const decoded = yield* Effect.try({

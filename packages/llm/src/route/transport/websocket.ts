@@ -125,6 +125,8 @@ const webSocketUrl = (value: string) =>
 export const open = (input: WebSocketRequest) =>
   Effect.try({
     try: () =>
+      // Non-standard `headers` init: only Bun/Node WebSocket accept it; browser
+      // globals silently ignore the auth header (native routes never run there).
       new (globalThis.WebSocket as unknown as WebSocketConstructorWithHeaders)(input.url, { headers: input.headers }),
     catch: (error) =>
       transportError("open", error instanceof Error ? error.message : "Failed to construct WebSocket", {
@@ -143,10 +145,21 @@ export const fromWebSocket = (
     yield* waitOpen(ws, input)
     const messages = yield* Queue.bounded<string | Uint8Array, LLMError | Cause.Done<void>>(128)
 
+    // The queue is bounded: a stalled consumer must turn into a stream error,
+    // never a silently dropped provider frame.
+    const offer = (value: string | Uint8Array) => {
+      if (Queue.offerUnsafe(messages, value)) return
+      Queue.failCauseUnsafe(
+        messages,
+        Cause.fail(
+          transportError("message", "WebSocket message queue overflow", { url: input.url, kind: "message" }),
+        ),
+      )
+    }
     const onMessage = (event: MessageEvent) => {
-      if (typeof event.data === "string") return Queue.offerUnsafe(messages, event.data)
+      if (typeof event.data === "string") return offer(event.data)
       const binary = binaryMessage(event.data)
-      if (binary) return Queue.offerUnsafe(messages, binary)
+      if (binary) return offer(binary)
       Queue.failCauseUnsafe(
         messages,
         Cause.fail(

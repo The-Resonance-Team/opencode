@@ -31,3 +31,23 @@ export async function writeJsonAtomic(filePath: string, value: unknown) {
     throw error
   })
 }
+
+// Writes to one file serialize: full rewrites and appends from the same session
+// must never interleave (a late append resurrects trimmed entries). Failures
+// surface to the console instead of silently losing user drafts.
+// ponytail: keyed by the small fixed set of state file paths; never evicted.
+const queues = new Map<string, Promise<void>>()
+function queued(filePath: string, write: () => Promise<void>) {
+  const next = (queues.get(filePath) ?? Promise.resolve())
+    .then(write)
+    .catch((error) => console.error(`failed to persist ${filePath}`, error))
+  queues.set(filePath, next)
+}
+
+export function writeTextQueued(filePath: string, content: string) {
+  queued(filePath, () => writeText(filePath, content))
+}
+
+export function appendTextQueued(filePath: string, content: string) {
+  queued(filePath, () => appendText(filePath, content))
+}

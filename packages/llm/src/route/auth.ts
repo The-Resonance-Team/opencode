@@ -37,9 +37,6 @@ export interface Auth {
   readonly pipe: <A>(f: (self: Auth) => A) => A
 }
 
-export const isAuth = (input: unknown): input is Auth =>
-  typeof input === "object" && input !== null && "apply" in input && typeof input.apply === "function"
-
 const credential = (load: Effect.Effect<Redacted.Redacted, CredentialError>): Credential => {
   const self: Credential = {
     load,

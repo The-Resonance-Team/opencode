@@ -334,6 +334,7 @@ export const dict = {
   "common.goForward": "前進",
   "common.loading": "載入中",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "切換偵錯工具",
   "common.cancel": "取消",
   "common.clear": "清除",
   "common.connect": "連線",
@@ -405,6 +406,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "不支援的附件",
   "prompt.toast.attachmentDuplicate.title": "此檔案已上傳",
+  "prompt.toast.attachmentTooLarge.title": "此檔案大於 10 MiB 附件限制",
   "prompt.toast.pasteUnsupported.description": "此處僅能附加圖片、PDF 或文字檔案。",
   "prompt.toast.modelAgentRequired.title": "請選擇代理程式和模型",
   "prompt.toast.modelAgentRequired.description": "傳送提示前請先選擇代理程式和模型。",

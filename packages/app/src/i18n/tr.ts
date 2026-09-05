@@ -341,6 +341,7 @@ export const dict = {
   "common.goForward": "İleri git",
   "common.loading": "Yükleniyor",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Hata ayıklama araçlarını değiştir",
   "common.cancel": "İptal",
   "common.clear": "Temizle",
   "common.connect": "Bağlan",
@@ -412,6 +413,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "Desteklenmeyen ek",
   "prompt.toast.attachmentDuplicate.title": "Bu dosya zaten yüklendi",
+  "prompt.toast.attachmentTooLarge.title": "Bu dosya 10 MiB ek limitinden daha büyük",
   "prompt.toast.pasteUnsupported.description": "Buraya yalnızca resimler, PDF'ler veya metin dosyaları eklenebilir.",
   "prompt.toast.modelAgentRequired.title": "Bir ajan ve model seçin",
   "prompt.toast.modelAgentRequired.description": "İstem göndermeden önce bir ajan ve model seçin.",

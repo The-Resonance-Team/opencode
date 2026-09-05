@@ -5,8 +5,12 @@ import { validator } from "hono-openapi"
 import z from "zod"
 import { cors } from "hono/cors"
 import { Share } from "~/core/share"
+import { Storage } from "~/core/storage"
 import { Resource } from "sst"
 import { timingSafeEqual } from "node:crypto"
+
+// Share ids become storage key segments; traversal characters are rejected at the boundary.
+const ShareIDParam = z.object({ shareID: z.string().regex(Storage.KEY_SEGMENT_PATTERN) })
 
 const app = new Hono()
 
@@ -79,7 +83,7 @@ app
         },
       },
     }),
-    validator("param", z.object({ shareID: z.string() })),
+    validator("param", ShareIDParam),
     validator("json", z.object({ secret: z.string(), data: Share.Data.array() })),
     async (c) => {
       const { shareID } = c.req.valid("param")
@@ -107,7 +111,7 @@ app
         },
       },
     }),
-    validator("param", z.object({ shareID: z.string() })),
+    validator("param", ShareIDParam),
     async (c) => {
       const { shareID } = c.req.valid("param")
       c.header("Cache-Control", "public, max-age=30, s-maxage=300, stale-while-revalidate=86400")
@@ -130,7 +134,7 @@ app
         },
       },
     }),
-    validator("param", z.object({ shareID: z.string() })),
+    validator("param", ShareIDParam),
     validator("json", z.object({ secret: z.string() })),
     async (c) => {
       const { shareID } = c.req.valid("param")
@@ -147,7 +151,7 @@ app
     if (actual.length !== secret.length || !timingSafeEqual(actual, secret))
       return c.json({ error: "Unauthorized" }, 401)
 
-    const body = z.object({ shareID: z.string().min(1) }).safeParse(await c.req.json().catch(() => undefined))
+    const body = ShareIDParam.safeParse(await c.req.json().catch(() => undefined))
     if (!body.success) return c.json({ error: "Invalid request", issues: body.error.issues }, 400)
     return Share.removeAdmin({ id: body.data.shareID })
       .then(() => c.json({ success: true, message: "Share removed" }))

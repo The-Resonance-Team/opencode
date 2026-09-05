@@ -65,49 +65,6 @@ export default {
           clientID: Resource.GOOGLE_CLIENT_ID.value,
           scopes: ["openid", "email"],
         }),
-        //        email: CodeProvider({
-        //          async request(req, state, form, error) {
-        //            console.log(state)
-        //            const params = new URLSearchParams()
-        //            if (error) {
-        //              params.set("error", error.type)
-        //            }
-        //            if (state.type === "start") {
-        //              return Response.redirect(process.env.AUTH_FRONTEND_URL + "/auth/email?" + params.toString(), 302)
-        //            }
-        //
-        //            if (state.type === "code") {
-        //              return Response.redirect(process.env.AUTH_FRONTEND_URL + "/auth/code?" + params.toString(), 302)
-        //            }
-        //
-        //            return new Response("ok")
-        //          },
-        //          async sendCode(claims, code) {
-        //            const email = z.string().email().parse(claims.email)
-        //            const cmd = new SendEmailCommand({
-        //              Destination: {
-        //                ToAddresses: [email],
-        //              },
-        //              FromEmailAddress: `SST <auth@${Resource.Email.sender}>`,
-        //              Content: {
-        //                Simple: {
-        //                  Body: {
-        //                    Html: {
-        //                      Data: `Your pin code is <strong>${code}</strong>`,
-        //                    },
-        //                    Text: {
-        //                      Data: `Your pin code is ${code}`,
-        //                    },
-        //                  },
-        //                  Subject: {
-        //                    Data: "SST Console Pin Code: " + code,
-        //                  },
-        //                },
-        //              },
-        //            })
-        //            await ses.send(cmd)
-        //          },
-        //        }),
       },
       storage: CloudflareStorage({
         // @ts-ignore
@@ -116,7 +73,9 @@ export default {
       subjects,
       allow: ({ clientID, redirectURI }) => Promise.resolve(isAllowedAuthorizationRedirect(clientID, redirectURI)),
       async success(ctx, response) {
-        console.log(response)
+        // The response carries the OAuth tokenset and user email; log only the
+        // provider name so production logs stay free of credentials and PII.
+        console.log("oauth success", { provider: response.provider })
 
         let subject: string | undefined
         let email: string | undefined
@@ -179,7 +138,7 @@ export default {
           // create account if not found
           let accountID = idByProvider ?? idByEmail
           if (!accountID) {
-            console.log("creating account for", email)
+            console.log("creating account")
             accountID = await Account.create({})
             newAccount = true
           }

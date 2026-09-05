@@ -316,6 +316,7 @@ export const dict: Record<string, string> = {
   "common.goForward": "གདོང་ཕྱོགས་ལུ་འགྲུལ་བསྐྱོད་འབད།",
   "common.loading": "མངོན་གསལ་འབད་དོ།",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Toggle debug tools",
   "common.cancel": "ཆ་མེད་བཏང་པ་",
   "common.clear": "གསལ་ཏོག་ཏོ",
   "common.open": "ཕྱེ་ཕྱེཝ",
@@ -386,6 +387,7 @@ export const dict: Record<string, string> = {
   "prompt.toast.pasteUnsupported.description":
     "པར་རིས་དང་པི་ཌི་ཨེཕ་ ཡང་ན་ ཚིག་ཡིག་ཡིག་སྣོད་ཚུ་རྐྱངམ་ཅིག་ ནཱ་ལུ་མཉམ་སྦྲགས་འབད་བཏུབ།",
   "prompt.toast.attachmentDuplicate.title": "ཡིག་སྣོད་འདི་ཧེ་མ་ལས་སྐྱེལ་བཙུགས་འབད་ཡི།",
+  "prompt.toast.attachmentTooLarge.title": "This file is larger than the 10 MiB attachment limit",
   "prompt.toast.modelAgentRequired.title": "ལས་ཚབ་དང་དཔེ་ཚད་ཅིག་སེལ་འཐུ་འབད།",
   "prompt.toast.modelAgentRequired.description": "བརྡ་སྟོན་མ་གཏང་པའི་ཧེ་མ་ ལས་ཚབ་དང་དཔེ་ཚད་གདམ་ཁ་རྐྱབས།",
   "prompt.toast.worktreeCreateFailed.title": "Git worktree གསར་བསྐྲུན་འབད་མ་ཚུགས།",

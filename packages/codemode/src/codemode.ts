@@ -127,10 +127,20 @@ const validateLimit = <Value extends number | undefined>(
   return value
 }
 
+/** Conservative budgets applied when a caller omits a limit: model-authored
+ *  programs must not outlive a turn, fan out tool calls unboundedly, or return
+ *  unbounded output. Callers may only tighten, not disable (pass Infinity-free
+ *  values), by supplying an explicit limit. */
+export const DEFAULT_LIMITS = {
+  timeoutMs: 10 * 60 * 1000,
+  maxToolCalls: 500,
+  maxOutputBytes: 1024 * 1024,
+} as const
+
 const resolveExecutionLimits = (limits?: ExecutionLimits): ResolvedExecutionLimits => ({
-  timeoutMs: validateLimit("timeoutMs", limits?.timeoutMs, 1),
-  maxToolCalls: validateLimit("maxToolCalls", limits?.maxToolCalls, 0),
-  maxOutputBytes: validateLimit("maxOutputBytes", limits?.maxOutputBytes, 0),
+  timeoutMs: validateLimit("timeoutMs", limits?.timeoutMs ?? DEFAULT_LIMITS.timeoutMs, 1),
+  maxToolCalls: validateLimit("maxToolCalls", limits?.maxToolCalls ?? DEFAULT_LIMITS.maxToolCalls, 0),
+  maxOutputBytes: validateLimit("maxOutputBytes", limits?.maxOutputBytes ?? DEFAULT_LIMITS.maxOutputBytes, 0),
 })
 
 /** Executes one Effect-native CodeMode program without constructing a reusable runtime. */

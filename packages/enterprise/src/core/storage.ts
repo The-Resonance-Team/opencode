@@ -90,7 +90,14 @@ export namespace Storage {
     throw new Error("No storage adapter configured")
   })
 
-  function resolve(key: string[]) {
+  // Key segments become object-path components; rejecting traversal here keeps
+  // every caller safe even when ids originate from client input.
+  // Single source for the id charset enforced at the route boundary and the
+  // storage choke point; the two guards must never drift.
+  export const KEY_SEGMENT_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]*$/
+  export function resolve(key: string[]) {
+    for (const segment of key)
+      if (!KEY_SEGMENT_PATTERN.test(segment)) throw new Error(`Invalid storage key segment: ${segment}`)
     return key.join("/") + ".json"
   }
 

@@ -39,7 +39,14 @@ export const authorizationLayer = Layer.effect(
   Authorization,
   Effect.gen(function* () {
     const config = yield* ServerAuth.Config
-    if (!ServerAuth.required(config)) return Authorization.of((effect) => effect)
+    if (!ServerAuth.required(config)) {
+      // Fail-open is the local-dev default, but it must be loud: anything that
+      // can reach this socket has the full API (file read, PTY, prompts).
+      yield* Effect.logWarning(
+        "Server authentication is disabled (no OPENCODE_SERVER_PASSWORD). Any client that can reach this socket has full API access.",
+      )
+      return Authorization.of((effect) => effect)
+    }
     return Authorization.of((effect) =>
       Effect.gen(function* () {
         const request = yield* HttpServerRequest.HttpServerRequest

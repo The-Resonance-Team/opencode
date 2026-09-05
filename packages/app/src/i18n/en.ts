@@ -238,6 +238,7 @@ export const dict = {
   "common.goForward": "Navigate forward",
   "common.loading": "Loading",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Toggle debug tools",
   "common.cancel": "Cancel",
   "common.clear": "Clear",
   "common.open": "Open",

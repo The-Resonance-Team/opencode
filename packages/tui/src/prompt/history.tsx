@@ -4,7 +4,7 @@ import { createStore, produce, unwrap } from "solid-js/store"
 import type { AgentPart, FilePart, TextPart } from "@opencode-ai/sdk/v2"
 import { createSimpleContext } from "../context/helper"
 import { useTuiPaths } from "../context/runtime"
-import { appendText, readText, writeText } from "../util/persistence"
+import { appendTextQueued, readText, writeTextQueued } from "../util/persistence"
 
 export type PromptInfo = {
   input: string
@@ -57,7 +57,7 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
 
       // Rewrite valid retained entries to self-heal corruption and enforce the limit.
       if (lines.length > 0)
-        writeText(historyPath, lines.map((line) => JSON.stringify(line)).join("\n") + "\n").catch(() => {})
+        writeTextQueued(historyPath, lines.map((line) => JSON.stringify(line)).join("\n") + "\n")
     })
 
     const [store, setStore] = createStore({
@@ -101,10 +101,10 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
         )
 
         if (trimmed) {
-          writeText(historyPath, store.history.map((line) => JSON.stringify(line)).join("\n") + "\n").catch(() => {})
+          writeTextQueued(historyPath, store.history.map((line) => JSON.stringify(line)).join("\n") + "\n")
           return
         }
-        appendText(historyPath, JSON.stringify(entry) + "\n").catch(() => {})
+        appendTextQueued(historyPath, JSON.stringify(entry) + "\n")
       },
     }
   },

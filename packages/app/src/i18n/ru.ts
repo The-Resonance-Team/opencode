@@ -335,6 +335,7 @@ export const dict = {
   "common.goForward": "Вперёд",
   "common.loading": "Загрузка",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Переключить инструменты отладки",
   "common.cancel": "Отмена",
   "common.clear": "Очистить",
   "common.connect": "Подключить",
@@ -406,6 +407,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "Неподдерживаемое вложение",
   "prompt.toast.attachmentDuplicate.title": "Этот файл уже загружен",
+  "prompt.toast.attachmentTooLarge.title": "Этот файл превышает ограничение на вложение 10 МиБ",
   "prompt.toast.pasteUnsupported.description": "Здесь можно прикрепить только изображения, PDF или текстовые файлы.",
   "prompt.toast.modelAgentRequired.title": "Выберите агента и модель",
   "prompt.toast.modelAgentRequired.description": "Выберите агента и модель перед отправкой запроса.",
