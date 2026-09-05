@@ -319,6 +319,7 @@ export const dict = {
   "common.goForward": "Tiến tới",
   "common.loading": "Đang tải",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Chuyển công cụ gỡ lỗi",
   "common.cancel": "Hủy",
   "common.clear": "Xóa",
   "common.open": "Mở",

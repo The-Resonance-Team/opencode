@@ -3,7 +3,7 @@ import { onMount } from "solid-js"
 import { createStore, produce, unwrap } from "solid-js/store"
 import { createSimpleContext } from "../context/helper"
 import { useTuiPaths } from "../context/runtime"
-import { appendText, readText, writeText } from "../util/persistence"
+import { appendTextQueued, readText, writeTextQueued } from "../util/persistence"
 import type { PromptInfo } from "./history"
 
 export type StashEntry = {
@@ -38,7 +38,7 @@ export const { use: usePromptStash, provider: PromptStashProvider } = createSimp
       const lines = parsePromptStash(await readText(stashPath).catch(() => ""))
       setStore("entries", lines)
       if (lines.length > 0)
-        writeText(stashPath, lines.map((line) => JSON.stringify(line)).join("\n") + "\n").catch(() => {})
+        writeTextQueued(stashPath, lines.map((line) => JSON.stringify(line)).join("\n") + "\n")
     })
 
     const [store, setStore] = createStore({ entries: [] as StashEntry[] })
@@ -61,28 +61,28 @@ export const { use: usePromptStash, provider: PromptStashProvider } = createSimp
         )
 
         if (trimmed) {
-          writeText(stashPath, store.entries.map((line) => JSON.stringify(line)).join("\n") + "\n").catch(() => {})
+          writeTextQueued(stashPath, store.entries.map((line) => JSON.stringify(line)).join("\n") + "\n")
           return
         }
-        appendText(stashPath, JSON.stringify(stash) + "\n").catch(() => {})
+        appendTextQueued(stashPath, JSON.stringify(stash) + "\n")
       },
       pop() {
         if (store.entries.length === 0) return undefined
         const entry = store.entries[store.entries.length - 1]
         setStore(produce((draft) => void draft.entries.pop()))
-        writeText(
+        writeTextQueued(
           stashPath,
           store.entries.length > 0 ? store.entries.map((line) => JSON.stringify(line)).join("\n") + "\n" : "",
-        ).catch(() => {})
+        )
         return entry
       },
       remove(index: number) {
         if (index < 0 || index >= store.entries.length) return
         setStore(produce((draft) => void draft.entries.splice(index, 1)))
-        writeText(
+        writeTextQueued(
           stashPath,
           store.entries.length > 0 ? store.entries.map((line) => JSON.stringify(line)).join("\n") + "\n" : "",
-        ).catch(() => {})
+        )
       },
     }
   },

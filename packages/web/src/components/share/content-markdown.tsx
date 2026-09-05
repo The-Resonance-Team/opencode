@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify"
 import { marked } from "marked"
 import { codeToHtml } from "shiki"
 import markedShiki from "marked-shiki"
@@ -37,7 +38,11 @@ export function ContentMarkdown(props: Props) {
   const [html] = createResource(
     () => strip(props.text),
     async (markdown) => {
-      return markedWithShiki.parse(markdown)
+      // Shared-session markdown is untrusted input and marked passes raw HTML
+      // through; sanitize before innerHTML and drop the render when DOMPurify
+      // is unavailable instead of injecting unsanitized output.
+      const html = await markedWithShiki.parse(markdown)
+      return DOMPurify.isSupported ? DOMPurify.sanitize(html) : ""
     },
   )
   const [expanded, setExpanded] = createSignal(false)

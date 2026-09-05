@@ -5,6 +5,7 @@ import { useI18n } from "@opencode-ai/ui/context/i18n"
 import { FileIcon } from "@opencode-ai/ui/file-icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
 import { Markdown } from "./markdown"
+import DOMPurify from "dompurify"
 
 interface OoxmlViewer {
   load(source: ArrayBuffer): Promise<void>
@@ -146,8 +147,7 @@ function DocxRender(props: { url: string; onFail: () => void }) {
       const fallbackBuffer = buffer.slice(0)
       // ponytail: offline 100% - @silurus/ooxml is Rust/WASM canvas like Word (measures every line, handles w:tab leader, pagination). Falls back to docx-renderer if WASM fails.
       try {
-        // @ts-ignore
-        const mod: any = await import("@silurus/ooxml/docx")
+        const mod = await import("@silurus/ooxml/docx")
         const v: OoxmlViewer = new mod.DocxScrollViewer(el, { enableTextSelection: true })
         await v.load(buffer)
         viewer = v
@@ -157,6 +157,9 @@ function DocxRender(props: { url: string; onFail: () => void }) {
       }
       const { render } = await import("docx-renderer")
       await render(fallbackBuffer, el)
+      // docx-renderer interpolates document-derived char codes into innerHTML
+      // (e.g. `&#x${char};`); re-sanitize the rendered tree before display.
+      el.innerHTML = DOMPurify.sanitize(el.innerHTML)
     } catch (error) {
       console.error("Document preview failed", error)
       props.onFail()
@@ -315,8 +318,7 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
       const buffer = await fetch(props.url).then((res) => res.arrayBuffer())
       // ponytail: offline Excel - try WASM first, fallback to HTML table if text overflows (browser handles wrap/clip better)
       try {
-        // @ts-ignore
-        const mod: any = await import("@silurus/ooxml/xlsx")
+        const mod = await import("@silurus/ooxml/xlsx")
         const wb = await mod.XlsxWorkbook.load(buffer.slice(0))
         const ws = await wb.getWorksheet(0)
         const table = buildXlsxTable(ws, wb.cellText.bind(wb))
@@ -394,9 +396,9 @@ function XlsxRender(props: { url: string; onFail: () => void }) {
       } catch (e) {
         console.warn("HTML table failed, fallback to WASM", e)
       }
-      // @ts-ignore
-      const mod2: any = await import("@silurus/ooxml/xlsx")
-      const v: OoxmlViewer = new mod2.XlsxViewer(el, { enableTextSelection: true })
+      const mod2 = await import("@silurus/ooxml/xlsx")
+      // The canvas XlsxViewer exposes element selection, not text selection.
+      const v: OoxmlViewer = new mod2.XlsxViewer(el, { enableElementSelection: true })
       await v.load(buffer)
       viewer = v
     } catch (error) {
@@ -429,8 +431,7 @@ function PptxRender(props: { url: string; onFail: () => void }) {
     try {
       const buffer = await fetch(props.url).then((res) => res.arrayBuffer())
       // ponytail: offline 100% - PowerPoint WASM, PptxScrollViewer for container (virtualized slides). PptxViewer is canvas-only.
-      // @ts-ignore
-      const mod: any = await import("@silurus/ooxml/pptx")
+      const mod = await import("@silurus/ooxml/pptx")
       const Viewer = mod.PptxScrollViewer ?? mod.PptxViewer
       const v: OoxmlViewer = new Viewer(el, { enableTextSelection: true })
       await v.load(buffer)

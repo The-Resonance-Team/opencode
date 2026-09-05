@@ -13,6 +13,13 @@ import { LayerNode } from "./effect/layer-node"
 import { makeRuntime } from "./effect/runtime"
 import { NpmConfig } from "./npm-config"
 
+// package.json / package-lock.json dependency sections, as read for staleness checks.
+type DependencyManifest = {
+  dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
+  peerDependencies?: Record<string, string>
+  optionalDependencies?: Record<string, string>
+}
 export class InstallFailedError extends Schema.TaggedErrorClass<InstallFailedError>()("NpmInstallFailedError", {
   add: Schema.Array(Schema.String).pipe(Schema.optional),
   dir: Schema.String,
@@ -157,20 +164,21 @@ const layer = Layer.effect(
         return
 
       yield* Effect.gen(function* () {
-        const pkg = yield* afs.readJson(path.join(dir, "package.json")).pipe(Effect.orElseSucceed(() => ({})))
-        const lock = yield* afs.readJson(path.join(dir, "package-lock.json")).pipe(Effect.orElseSucceed(() => ({})))
-
-        const pkgAny = pkg as any
-        const lockAny = lock as any
+        const pkg = (yield* afs.readJson(path.join(dir, "package.json")).pipe(
+          Effect.orElseSucceed(() => ({})),
+        )) as DependencyManifest
+        const lock = (yield* afs.readJson(path.join(dir, "package-lock.json")).pipe(
+          Effect.orElseSucceed(() => ({})),
+        )) as { packages?: Record<string, DependencyManifest> }
         const declared = new Set([
-          ...Object.keys(pkgAny?.dependencies || {}),
-          ...Object.keys(pkgAny?.devDependencies || {}),
-          ...Object.keys(pkgAny?.peerDependencies || {}),
-          ...Object.keys(pkgAny?.optionalDependencies || {}),
+          ...Object.keys(pkg?.dependencies || {}),
+          ...Object.keys(pkg?.devDependencies || {}),
+          ...Object.keys(pkg?.peerDependencies || {}),
+          ...Object.keys(pkg?.optionalDependencies || {}),
           ...(input?.add || []).map((pkg) => pkg.name),
         ])
 
-        const root = lockAny?.packages?.[""] || {}
+        const root = lock?.packages?.[""] || {}
         const locked = new Set([
           ...Object.keys(root?.dependencies || {}),
           ...Object.keys(root?.devDependencies || {}),

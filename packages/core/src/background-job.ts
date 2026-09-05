@@ -98,6 +98,21 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/BackgroundJob") {}
 
+// Terminal entries stay observable briefly (list/get callers, UIs polling
+// status) then get FIFO-evicted by completion time so a long-lived server
+// process does not accumulate finished jobs forever.
+const MAX_TERMINAL_JOBS = 100
+function prune(jobs: Map<string, Active>): Map<string, Active> {
+  const terminal = Array.from(jobs.values()).filter((job) => job.info.status !== "running")
+  if (terminal.length <= MAX_TERMINAL_JOBS) return jobs
+  const drop = terminal
+    .sort((a, b) => (a.info.completed_at ?? 0) - (b.info.completed_at ?? 0))
+    .slice(0, terminal.length - MAX_TERMINAL_JOBS)
+  const next = new Map(jobs)
+  for (const job of drop) next.delete(job.info.id)
+  return next
+}
+
 function snapshot(job: Active): Info {
   return {
     ...job.info,
@@ -161,7 +176,7 @@ export const make = Effect.gen(function* () {
           ...(Exit.isFailure(exit) ? { error: errorText(Cause.squash(exit.cause)) } : {}),
         },
       }
-      return [{ info: snapshot(next), done: job.done, scope: job.scope }, new Map(jobs).set(id, next)]
+      return [{ info: snapshot(next), done: job.done, scope: job.scope }, prune(new Map(jobs).set(id, next))]
     })
     if (result.info && result.done) yield* Deferred.succeed(result.done, result.info).pipe(Effect.ignore)
     if (result.scope) {
@@ -350,7 +365,7 @@ export const make = Effect.gen(function* () {
           completed_at,
         },
       }
-      return [{ info: snapshot(next), done: job.done, scope: job.scope }, new Map(jobs).set(id, next)]
+      return [{ info: snapshot(next), done: job.done, scope: job.scope }, prune(new Map(jobs).set(id, next))]
     })
     if (result.info && result.done) yield* Deferred.succeed(result.done, result.info).pipe(Effect.ignore)
     if (result.scope) yield* Scope.close(result.scope, Exit.void)

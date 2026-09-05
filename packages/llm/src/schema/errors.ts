@@ -44,21 +44,6 @@ export class InvalidRequestReason extends Schema.Class<InvalidRequestReason>("LL
   }
 }
 
-export class NoRouteReason extends Schema.Class<NoRouteReason>("LLM.Error.NoRoute")({
-  _tag: Schema.tag("NoRoute"),
-  route: RouteID,
-  provider: ProviderID,
-  model: ModelID,
-}) {
-  get retryable() {
-    return false
-  }
-
-  get message() {
-    return `No LLM route for ${this.provider}/${this.model} using ${this.route}`
-  }
-}
-
 export class AuthenticationReason extends Schema.Class<AuthenticationReason>("LLM.Error.Authentication")({
   _tag: Schema.tag("Authentication"),
   message: Schema.String,
@@ -159,7 +144,6 @@ export class UnknownProviderReason extends Schema.Class<UnknownProviderReason>("
 
 export const LLMErrorReason = Schema.Union([
   InvalidRequestReason,
-  NoRouteReason,
   AuthenticationReason,
   RateLimitReason,
   QuotaExceededReason,

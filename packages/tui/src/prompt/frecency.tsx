@@ -3,7 +3,7 @@ import { onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createSimpleContext } from "../context/helper"
 import { useTuiPaths } from "../context/runtime"
-import { appendText, readText, writeText } from "../util/persistence"
+import { appendTextQueued, readText, writeTextQueued } from "../util/persistence"
 
 type FrecencyEntry = { path: string; frequency: number; lastOpen: number }
 
@@ -49,7 +49,7 @@ export const { use: useFrecency, provider: FrecencyProvider } = createSimpleCont
         ),
       )
       if (lines.length > 0)
-        writeText(frecencyPath, lines.map((entry) => JSON.stringify(entry)).join("\n") + "\n").catch(() => {})
+        writeTextQueued(frecencyPath, lines.map((entry) => JSON.stringify(entry)).join("\n") + "\n")
     })
 
     const [store, setStore] = createStore({ data: {} as Record<string, { frequency: number; lastOpen: number }> })
@@ -58,17 +58,17 @@ export const { use: useFrecency, provider: FrecencyProvider } = createSimpleCont
       const absolutePath = path.resolve(paths.cwd, filePath)
       const newEntry = { frequency: (store.data[absolutePath]?.frequency || 0) + 1, lastOpen: Date.now() }
       setStore("data", absolutePath, newEntry)
-      appendText(frecencyPath, JSON.stringify({ path: absolutePath, ...newEntry }) + "\n").catch(() => {})
+      appendTextQueued(frecencyPath, JSON.stringify({ path: absolutePath, ...newEntry }) + "\n")
 
       if (Object.keys(store.data).length <= MAX_FRECENCY_ENTRIES) return
       const sorted = Object.entries(store.data)
         .sort(([, a], [, b]) => b.lastOpen - a.lastOpen)
         .slice(0, MAX_FRECENCY_ENTRIES)
       setStore("data", Object.fromEntries(sorted))
-      writeText(
+      writeTextQueued(
         frecencyPath,
         sorted.map(([entryPath, entry]) => JSON.stringify({ path: entryPath, ...entry })).join("\n") + "\n",
-      ).catch(() => {})
+      )
     }
 
     return {

@@ -5,7 +5,7 @@ export function described<S extends Schema.Top>(schema: S, description: string):
   return schema.annotate({ description }) as S
 }
 
-export function responseDescription(description: string) {
+function responseDescription(description: string) {
   return OpenApi.annotations({
     transform: (operation) => {
       const response = operation.responses?.["200"]

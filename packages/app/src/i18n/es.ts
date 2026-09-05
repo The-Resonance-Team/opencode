@@ -337,6 +337,7 @@ export const dict = {
   "common.goForward": "Avanzar",
   "common.loading": "Cargando",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Alternar herramientas de depuración",
   "common.cancel": "Cancelar",
   "common.clear": "Limpiar",
   "common.connect": "Conectar",
@@ -408,6 +409,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "Adjunto no compatible",
   "prompt.toast.attachmentDuplicate.title": "Este archivo ya se ha subido",
+  "prompt.toast.attachmentTooLarge.title": "Este archivo es más grande que el límite de adjuntos de 10 MiB",
   "prompt.toast.pasteUnsupported.description":
     "Aquí solo se pueden adjuntar imágenes, archivos PDF o archivos de texto.",
   "prompt.toast.modelAgentRequired.title": "Selecciona un agente y modelo",

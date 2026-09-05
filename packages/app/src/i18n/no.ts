@@ -330,6 +330,7 @@ export const dict = {
   "common.goForward": "Gå frem",
   "common.loading": "Laster",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Veksle feilsøkingsverktøy",
   "common.cancel": "Avbryt",
   "common.connect": "Koble til",
   "common.disconnect": "Koble fra",
@@ -398,6 +399,7 @@ export const dict = {
 
   "prompt.toast.pasteUnsupported.title": "Ikke støttet vedlegg",
   "prompt.toast.attachmentDuplicate.title": "Denne filen er allerede lastet opp",
+  "prompt.toast.attachmentTooLarge.title": "Denne filen er større enn vedleggsgrensen på 10 MiB",
   "prompt.toast.pasteUnsupported.description": "Kun bilder, PDF-er eller tekstfiler kan legges ved her.",
   "prompt.toast.modelAgentRequired.title": "Velg en agent og modell",
   "prompt.toast.modelAgentRequired.description": "Velg en agent og modell før du sender en forespørsel.",

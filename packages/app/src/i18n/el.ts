@@ -313,6 +313,7 @@ export const dict = {
   "common.goForward": "Πλοήγηση προς τα εμπρός",
   "common.loading": "Φόρτωση",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Εναλλαγγή εργαλείων εντοπισμού σφαλμάτων",
   "common.cancel": "Ακύρωση",
   "common.clear": "Διαγραφή",
   "common.open": "Άνοιγμα",
@@ -382,6 +383,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.title": "Μη υποστηριζόμενο συνημμένο",
   "prompt.toast.pasteUnsupported.description": "Εδώ επισυνάπτονται μόνο εικόνες, αρχεία PDF ή αρχεία κειμένου.",
   "prompt.toast.attachmentDuplicate.title": "Αυτό το αρχείο έχει ήδη μεταφορτωθεί",
+  "prompt.toast.attachmentTooLarge.title": "Αυτό το αρχείο είναι μεγαλύτερο από το όριο συνημμένων 10 MiB",
   "prompt.toast.modelAgentRequired.title": "Επιλέξτε έναν πράκτορα και μοντέλο",
   "prompt.toast.modelAgentRequired.description":
     "Επιλέξτε έναν πράκτορα και ένα μοντέλο πριν στείλετε ένα μήνυμα προτροπής.",

@@ -109,10 +109,8 @@ export default function Share(props: {
       // Always use secure WebSocket protocol (wss)
       const wsBaseUrl = apiUrl.replace(/^https?:\/\//, "wss://")
       const wsUrl = `${wsBaseUrl}/share_poll?id=${props.id}`
-      // Create WebSocket connection
       socket = new WebSocket(wsUrl)
 
-      // Handle connection opening
       socket.onopen = () => {
         setConnectionStatus(["connected"])
       }
@@ -211,7 +209,6 @@ export default function Share(props: {
   onMount(() => {
     lastScrollY = window.scrollY // Initialize scroll position
 
-    // Create sentinel element
     const sentinel = document.createElement("div")
     sentinel.style.height = "1px"
     sentinel.style.position = "absolute"

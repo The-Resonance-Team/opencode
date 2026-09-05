@@ -323,6 +323,7 @@ export const dict = {
   "common.goForward": "Suivant",
   "common.loading": "Chargement",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Basculer les outils de débogage",
   "common.cancel": "Annuler",
   "common.clear": "Effacer",
   "common.connect": "Connecter",
@@ -390,6 +391,7 @@ export const dict = {
   "prompt.action.stop": "Arrêter",
   "prompt.toast.pasteUnsupported.title": "Pièce jointe non prise en charge",
   "prompt.toast.attachmentDuplicate.title": "Ce fichier a déjà été téléversé",
+  "prompt.toast.attachmentTooLarge.title": "Ce fichier est plus volumineux que la limite de pièce jointe de 10 MiB",
   "prompt.toast.pasteUnsupported.description":
     "Seules les images, les PDF ou les fichiers texte peuvent être joints ici.",
   "prompt.toast.modelAgentRequired.title": "Sélectionnez un agent et un modèle",

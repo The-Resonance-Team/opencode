@@ -15,7 +15,7 @@ const TolerantListToolsResultSchema = ListToolsResultSchema.extend({
   tools: ToolSchema.omit({ outputSchema: true }).array(),
 })
 
-export async function paginate<T, R extends { nextCursor?: string }>(
+async function paginate<T, R extends { nextCursor?: string }>(
   list: (cursor?: string) => Promise<R>,
   items: (result: R) => T[],
 ) {

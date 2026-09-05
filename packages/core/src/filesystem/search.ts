@@ -20,7 +20,7 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/v2/FileSystem/Search") {}
 
-export const ripgrepLayer = Layer.effect(
+const ripgrepLayer = Layer.effect(
   Service,
   Effect.gen(function* () {
     const fs = yield* FSUtil.Service
@@ -119,7 +119,7 @@ export const ripgrepLayer = Layer.effect(
   }),
 )
 
-export const fffLayer = Layer.effect(
+const fffLayer = Layer.effect(
   Service,
   Effect.gen(function* () {
     const location = yield* Location.Service

@@ -81,7 +81,7 @@ export function messageLoaderFromSDK(sdk: SDK): MessageLoaderInterface {
   })
 }
 
-export const messageLoaderLayer = (sdk: SDK) => Layer.succeed(MessageLoader, messageLoaderFromSDK(sdk))
+const messageLoaderLayer = (sdk: SDK) => Layer.succeed(MessageLoader, messageLoaderFromSDK(sdk))
 
 export function contextTokens(message: AssistantTokenCost): number {
   return message.tokens.input + message.tokens.cache.read + message.tokens.cache.write

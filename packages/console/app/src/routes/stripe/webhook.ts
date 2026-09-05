@@ -17,7 +17,8 @@ export async function POST(input: APIEvent) {
     input.request.headers.get("stripe-signature")!,
     Resource.STRIPE_WEBHOOK_SECRET.value,
   )
-  console.log(body.type, JSON.stringify(body, null, 2))
+  // Full Stripe events carry customer/payment metadata (PII); log only the event kind and id.
+  console.log(body.type)
 
   return (async () => {
     if (body.type === "customer.updated") {

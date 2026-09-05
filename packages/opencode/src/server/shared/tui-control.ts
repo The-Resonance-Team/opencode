@@ -23,6 +23,6 @@ export function submitTuiResponse(body: unknown) {
   response.push(body)
 }
 
-export function nextTuiResponse() {
+function nextTuiResponse() {
   return response.next()
 }

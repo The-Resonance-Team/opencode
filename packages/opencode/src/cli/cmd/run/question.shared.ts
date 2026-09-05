@@ -318,7 +318,7 @@ export function questionReject(request: QuestionRequest): QuestionReject {
   }
 }
 
-export function questionHint(request: QuestionRequest, state: QuestionBodyState): string {
+function questionHint(request: QuestionRequest, state: QuestionBodyState): string {
   if (state.submitting) {
     return "Waiting for question event..."
   }

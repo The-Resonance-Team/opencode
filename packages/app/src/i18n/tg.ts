@@ -313,6 +313,7 @@ export const dict = {
   "common.goForward": "Ба пеш ҳаракат кунед",
   "common.loading": "Бор карда мешавад",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Гузоишҳои ислоҳро иваз кардан",
   "common.cancel": "Бекор кардан",
   "common.clear": "Тоза",
   "common.open": "Кушода",
@@ -383,6 +384,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.description":
     "Дар ин ҷо танҳо тасвирҳо, PDFс ё файлҳои матнӣ замима кардан мумкин аст.",
   "prompt.toast.attachmentDuplicate.title": "Ин файл аллакай бор карда шудааст",
+  "prompt.toast.attachmentTooLarge.title": "Ин файл аз ҳади иловаи 10 МиБ калонтар аст",
   "prompt.toast.modelAgentRequired.title": "Агент ва моделро интихоб кунед",
   "prompt.toast.modelAgentRequired.description": "Пеш аз фиристодани промпт агент ва моделро интихоб кунед.",
   "prompt.toast.worktreeCreateFailed.title": "Эҷоди Git worktree муяссар нашуд",

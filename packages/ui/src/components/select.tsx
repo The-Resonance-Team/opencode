@@ -83,7 +83,7 @@ export function Select<T>(props: SelectProps<T> & Omit<ButtonProps, "children">)
   })
 
   return (
-    // @ts-ignore
+    // @ts-expect-error Kobalte's multi-generic JSX instantiation is untyped at this call site.
     <Kobalte<T, { category: string; options: T[] }>
       {...others}
       data-component="select"

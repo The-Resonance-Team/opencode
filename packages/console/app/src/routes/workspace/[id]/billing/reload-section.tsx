@@ -88,10 +88,7 @@ export function ReloadSection() {
   })
 
   function show() {
-    while (true) {
-      setReloadSubmission.clear()
-      if (!setReloadSubmission.result) break
-    }
+    for (let attempts = 0; attempts < 3 && setReloadSubmission.result; attempts++) setReloadSubmission.clear()
     const info = billingInfo()!
     setStore("show", true)
     setStore("reload", true)

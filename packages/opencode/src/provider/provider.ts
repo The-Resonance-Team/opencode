@@ -947,7 +947,9 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
                 delete body.max_tokens
                 init = { ...init, body: JSON.stringify(body) }
               }
-            } catch {}
+            } catch {
+              // Best-effort rename; an unparseable body just goes through untouched.
+            }
           }
 
           const response = await fetch(url, init)
@@ -957,6 +959,9 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
               const errorData = await response.clone().json()
               const errorMessage = String(errorData.message || errorData.error || "")
               if (errorMessage.toLowerCase().includes("conversation complete")) {
+                // Copilot answers 400 "conversation complete" when the thread is
+                // finished. Map it to an empty stop completion — no content is
+                // invented, the turn simply ends as the provider intended.
                 return new Response(
                   JSON.stringify({
                     choices: [{ finish_reason: "stop", message: { content: "", role: "assistant" } }],
@@ -1423,13 +1428,14 @@ const layer = Layer.effect(
         function mergeProvider(providerID: ProviderV2.ID, provider: Partial<Info>) {
           const existing = providers[providerID]
           if (existing) {
+            // mergeDeep's generic merge does not narrow back to the Info union on write.
             // @ts-expect-error
             providers[providerID] = mergeDeep(existing, provider)
             return
           }
           const match = database[providerID]
           if (!match) return
-          // @ts-expect-error
+          // @ts-expect-error mergeDeep's generic merge does not narrow back to the Info union on write.
           providers[providerID] = mergeDeep(match, provider)
         }
 

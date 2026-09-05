@@ -572,7 +572,7 @@ type MaybeApplyPatchVerifiedResult =
   | { type: MaybeApplyPatchVerified.NotApplyPatch }
 
 // Effectful verified-parse: needs FSUtil.Service to read existing files
-export const maybeParseApplyPatchVerified = Effect.fn("Patch.maybeParseApplyPatchVerified")(function* (
+const maybeParseApplyPatchVerified = Effect.fn("Patch.maybeParseApplyPatchVerified")(function* (
   argv: string[],
   cwd: string,
 ) {

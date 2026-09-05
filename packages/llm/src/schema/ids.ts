@@ -17,8 +17,6 @@ export type ModelID = typeof ModelID.Type
 export const ProviderID = Schema.String.pipe(Schema.brand("LLM.ProviderID"))
 export type ProviderID = typeof ProviderID.Type
 
-export const ResponseID = Schema.String
-export type ResponseID = Schema.Schema.Type<typeof ResponseID>
 
 export const ContentBlockID = Schema.String
 export type ContentBlockID = Schema.Schema.Type<typeof ContentBlockID>

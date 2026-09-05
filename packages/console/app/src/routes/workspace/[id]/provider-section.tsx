@@ -80,10 +80,7 @@ function ProviderRow(props: { provider: Provider }) {
   })
 
   function show() {
-    while (true) {
-      saveSubmission.clear()
-      if (!saveSubmission.result) break
-    }
+    for (let attempts = 0; attempts < 3 && saveSubmission.result; attempts++) saveSubmission.clear()
     setStore("editing", true)
     setTimeout(() => input?.focus(), 0)
   }

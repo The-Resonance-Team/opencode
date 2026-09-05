@@ -1,5 +1,9 @@
+import { Resource } from "sst"
+
 import { and, Database, inArray } from "@opencode-ai/console-core/drizzle/index.js"
 import { ModelTpsRateLimitTable } from "@opencode-ai/console-core/schema/ip.sql.js"
+
+const MAX_IDS = 500
 
 type Result = Record<string, { interval: number; qualify: number; unqualify: number }[]>
 
@@ -7,8 +11,16 @@ export default {
   async fetch(request: Request) {
     if (request.method !== "POST") return new Response("Method Not Allowed", { status: 405 })
 
-    const body = (await request.json()) as { ids: string[] }
-    const ids = body.ids
+    // The worker reaches the production database; only operators holding the
+    // admin secret may drive it, and each call is bounded so `ids` cannot turn
+    // into an unbounded inArray scan.
+    const auth = request.headers.get("authorization")
+    if (auth !== `Bearer ${Resource.ADMIN_SECRET.value}`) return new Response("Unauthorized", { status: 401 })
+
+    const parsed = (await request.json().catch(() => undefined)) as { ids?: unknown } | undefined
+    const ids = parsed?.ids
+    if (!Array.isArray(ids) || ids.some((id) => typeof id !== "string") || ids.length > MAX_IDS)
+      return new Response("Invalid request", { status: 400 })
     if (ids.length === 0) return Response.json({} satisfies Result)
 
     const toInterval = (date: Date) =>

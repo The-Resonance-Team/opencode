@@ -318,6 +318,7 @@ export const dict = {
   "common.goForward": "اگے ودھو",
   "common.loading": "لوڈ ہو رہیا اے",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "ਡੀਬਗ ਟੂਲ ਟੌਗਲ ਕਰੋ",
   "common.cancel": "منسوخ کرو",
   "common.clear": "صاف",
   "common.open": "کھولو",
@@ -388,6 +389,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.description":
     "ایتھے صرف تصویراں، پی ڈی ایف، یا ٹیکسٹ فائلاں منسلک کیتیاں جا سکدیاں نیں۔",
   "prompt.toast.attachmentDuplicate.title": "ایہہ فائل پہلے ای اپ لوڈ ہو چکی اے",
+  "prompt.toast.attachmentTooLarge.title": "ਇਹ ਫਾਈਲ 10 MiB ਅਟੈਚਮੈਂਟ ਹੱਦ ਤੋਂ ਵੱਡੀ ਹੈ",
   "prompt.toast.modelAgentRequired.title": "اک ایجنٹ تے ماڈل چنو",
   "prompt.toast.modelAgentRequired.description": "پرامپٹ بھیجن توں پہلاں اک ایجنٹ تے ماڈل دا انتخاب کرو۔",
   "prompt.toast.worktreeCreateFailed.title": "ورک ٹری بنان چ ناکامی ہوئی",

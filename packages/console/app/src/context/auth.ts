@@ -30,9 +30,11 @@ export function useAuthSession() {
   return useSession<AuthSession>({
     password: Resource.ZEN_SESSION_SECRET.value,
     name: "auth",
-    maxAge: 60 * 60 * 24 * 365,
+    maxAge: 60 * 60 * 24 * 30,
     cookie: {
-      secure: false,
+      // The account session carries accountID+email; plaintext exposure is a
+      // credential leak. Browsers still accept Secure cookies on localhost.
+      secure: true,
       httpOnly: true,
     },
   })

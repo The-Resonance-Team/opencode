@@ -53,7 +53,7 @@ export type RepositoryError =
   | UnsupportedLocalRepositoryError
   | InvalidRepositoryBranchError
 
-export function isRepositoryError(error: unknown): error is RepositoryError {
+function isRepositoryError(error: unknown): error is RepositoryError {
   return (
     error instanceof InvalidRepositoryReferenceError ||
     error instanceof UnsupportedLocalRepositoryError ||

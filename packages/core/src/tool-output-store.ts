@@ -14,7 +14,7 @@ export const MAX_LINES = 2_000
 export const MAX_BYTES = 50 * 1024
 export const RETENTION = Duration.days(7)
 
-export const MANAGED_DIRECTORY = "tool-output"
+const MANAGED_DIRECTORY = "tool-output"
 
 export interface BoundInput {
   readonly sessionID: SessionSchema.ID
@@ -197,7 +197,7 @@ export const node = makeLocationNode({ service: Service, layer, deps: [FSUtil.no
 export const nodeWithoutConfig = makeLocationNode({ service: Service, layer, deps: [FSUtil.node, Global.node] })
 
 /** Runs retention scanning once globally rather than once per active Location. */
-export const cleanupLayer = Layer.effectDiscard(
+const cleanupLayer = Layer.effectDiscard(
   Effect.gen(function* () {
     const store = yield* Service
     yield* store.cleanup().pipe(Effect.repeat(Schedule.spaced(Duration.hours(1))), Effect.forkScoped)

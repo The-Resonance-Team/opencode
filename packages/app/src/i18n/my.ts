@@ -315,6 +315,7 @@ export const dict = {
   "common.goForward": "ရှေ့သို့သွားပါ။",
   "common.loading": "တင်နေသည်။",
   "common.loading.ellipsis": "...",
+  "titlebar.debugTools.toggle": "Debug တည်ဆောက်ရေးကိရိယာများ ပြောင်းရန်",
   "common.cancel": "မလုပ်တော့",
   "common.clear": "ရှင်းလင်းသည်။",
   "common.open": "ဖွင့်ပါ။",
@@ -385,6 +386,7 @@ export const dict = {
   "prompt.toast.pasteUnsupported.description":
     "ရုပ်ပုံများ၊ PDF များ သို့မဟုတ် စာသားဖိုင်များကိုသာ ဤနေရာတွင် ပူးတွဲနိုင်ပါသည်။",
   "prompt.toast.attachmentDuplicate.title": "ဤဖိုင်ကို အပ်လုဒ်လုပ်ပြီးပါပြီ။",
+  "prompt.toast.attachmentTooLarge.title": "ဤဖိုင်သည် 10 MiB ပူးတွဲကန့်သတ်ချက်ထက် ပိုကြီးသည်",
   "prompt.toast.modelAgentRequired.title": "အေးဂျင့်နှင့် မော်ဒယ်ကို ရွေးပါ။",
   "prompt.toast.modelAgentRequired.description": "Prompt မပို့မီ အေးဂျင့်နှင့် မော်ဒယ်ကို ရွေးပါ။",
   "prompt.toast.worktreeCreateFailed.title": "Git worktree ဖန်တီး၍မရပါ။",

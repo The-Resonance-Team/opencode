@@ -17,7 +17,7 @@ const emailSignup = action(async (formData: FormData) => {
       email_address: emailAddress,
     }),
   })
-  console.log(response)
+  if (!response.ok) console.error("email signup failed", response.status)
   return true
 })
 

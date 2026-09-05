@@ -49,10 +49,7 @@ export function MonthlyLimitSection() {
     //  2. Put in a key name and creates the key => form hides
     //  3. Click add key button again => form shows with the same error if
     //     submission.clear() is called only once
-    while (true) {
-      submission.clear()
-      if (!submission.result) break
-    }
+    for (let attempts = 0; attempts < 3 && submission.result; attempts++) submission.clear()
     setStore("show", true)
     input.focus()
   }

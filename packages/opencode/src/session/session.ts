@@ -274,8 +274,6 @@ export const ForkInput = Schema.Struct({
   sessionID: SessionID,
   messageID: Schema.optional(MessageID),
 })
-export const GetInput = SessionID
-export const ChildrenInput = SessionID
 export const RemoveInput = SessionID
 export const SetTitleInput = Schema.Struct({ sessionID: SessionID, title: Schema.String })
 export const SetArchivedInput = Schema.Struct({
@@ -290,7 +288,7 @@ export const SetPermissionInput = Schema.Struct({
   sessionID: SessionID,
   permission: PermissionV1.Ruleset,
 })
-export const SetRevertInput = Schema.Struct({
+const SetRevertInput = Schema.Struct({
   sessionID: SessionID,
   revert: Schema.optional(Revert),
   summary: Schema.optional(Summary),
@@ -335,6 +333,15 @@ export function plan(input: { slug: string; time: { created: number } }, instanc
   return path.join(base, [input.time.created, input.slug].join("-") + ".md")
 }
 
+// Missing pricing silently reports cost 0 for a session; surface it once per
+// model so billing gaps are visible without spamming per-message logs.
+const warnedMissingPricing = new Set<string>()
+function warnMissingPricing(modelID: string) {
+  if (warnedMissingPricing.has(modelID)) return
+  warnedMissingPricing.add(modelID)
+  console.warn(`no pricing data configured for model ${modelID}; session costs will report 0`)
+}
+
 export const getUsage = (input: { model: Provider.Model; usage: Usage; metadata?: ProviderMetadata }) => {
   const finite = (value: number) => (Number.isFinite(value) ? value : 0)
   const safe = (value: number) => Math.max(0, finite(value))
@@ -350,6 +357,7 @@ export const getUsage = (input: { model: Provider.Model; usage: Usage; metadata?
         // google-vertex-anthropic returns metadata under "vertex" key
         // (AnthropicMessagesLanguageModel custom provider key from 'vertex.anthropic.messages')
         input.metadata?.["vertex"]?.["cacheCreationInputTokens"] ??
+        // Provider-specific usage metadata keys are not in the shared metadata type.
         // @ts-expect-error
         input.metadata?.["bedrock"]?.["usage"]?.["cacheWriteInputTokens"] ??
         // @ts-expect-error
@@ -384,6 +392,7 @@ export const getUsage = (input: { model: Provider.Model; usage: Usage; metadata?
     (input.model.cost?.experimentalOver200K && contextTokens > 200_000
       ? input.model.cost.experimentalOver200K
       : input.model.cost)
+  if (!costInfo) warnMissingPricing(String(input.model.id))
   const totalNanoAiu = input.metadata?.["copilot"]?.["totalNanoAiu"]
   return {
     cost:
