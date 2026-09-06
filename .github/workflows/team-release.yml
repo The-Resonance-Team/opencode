@@ -51,6 +51,7 @@ jobs:
           node-version: "24"
       - name: Resolve version
         id: ver
+        shell: bash
         run: |
           if [ -n "${{ inputs.version }}" ]; then
             echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
@@ -138,6 +139,7 @@ jobs:
           node-version: "24"
       - name: Resolve version
         id: ver
+        shell: bash
         run: |
           if [ -n "${{ inputs.version }}" ]; then
             echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
