@@ -1,61 +1,80 @@
+import { Location } from "@opencode/schema/location"
+import { Plugin } from "@opencode/schema/plugin"
 import { Schema } from "effect"
-import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
-import { InvalidRequestError, UnknownError } from "../errors"
-
-export const PluginInfo = Schema.Struct({
-  id: Schema.String,
-  invokes: Schema.Array(Schema.String),
-})
-
-export class PluginNotFoundError extends Schema.TaggedErrorClass<PluginNotFoundError>()(
-  "PluginNotFoundError",
-  { message: Schema.String },
-  { httpApiStatus: 404 },
-) {}
-
-export class PluginInvokeNotFoundError extends Schema.TaggedErrorClass<PluginInvokeNotFoundError>()(
-  "PluginInvokeNotFoundError",
-  {
-    pluginID: Schema.String,
-    name: Schema.String,
-    message: Schema.String,
-  },
-  { httpApiStatus: 404 },
-) {}
-
-const InvokePayload = Schema.Struct({
-  name: Schema.String,
-  input: Schema.Unknown,
-})
-
-const InvokeResult = Schema.Struct({
-  result: Schema.Unknown,
-})
+import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/http-api"
+import { InvalidRequestError, PluginNotFoundError, ServiceUnavailableError } from "../errors.js"
+import { LocationQuery, locationQueryOpenApi } from "./location.js"
 
 export const PluginGroup = HttpApiGroup.make("server.plugin")
   .add(
     HttpApiEndpoint.get("plugin.list", "/api/plugin", {
-      success: Schema.Struct({ data: Schema.Array(PluginInfo) }),
-    }).annotateMerge(
-      OpenApi.annotations({
-        identifier: "v2.plugin.list",
-        summary: "List plugins",
-        description: "List registered plugins and the invokes they expose.",
-      }),
-    ),
+      query: LocationQuery,
+      success: Location.response(Schema.Array(Plugin.Info)),
+    })
+      .annotateMerge(locationQueryOpenApi)
+      .annotateMerge(
+        OpenApi.annotations({
+          identifier: "plugin.list",
+          summary: "List plugins",
+          description: "Retrieve enabled server plugins and their current status.",
+        }),
+      ),
   )
   .add(
-    HttpApiEndpoint.post("plugin.invoke", "/api/plugin/:pluginID/invoke", {
-      params: { pluginID: Schema.String },
-      payload: InvokePayload,
-      success: InvokeResult,
-      error: [PluginNotFoundError, PluginInvokeNotFoundError, UnknownError, InvalidRequestError],
-    }).annotateMerge(
-      OpenApi.annotations({
-        identifier: "v2.plugin.invoke",
-        summary: "Invoke a plugin function",
-        description: "Call an invoke exposed by a registered plugin.",
+    HttpApiEndpoint.get("plugin.gui", "/api/plugin/gui", {
+      query: Schema.Struct({
+        ...LocationQuery.fields,
+        id: Plugin.ID,
       }),
-    ),
+      success: Location.response(Plugin.GuiBundle),
+      error: PluginNotFoundError,
+    })
+      .annotateMerge(locationQueryOpenApi)
+      .annotateMerge(
+        OpenApi.annotations({
+          identifier: "plugin.gui",
+          summary: "Read plugin GUI bundle",
+          description:
+            "Read an active plugin's prebuilt CommonJS `./gui-experimental` bundle. Desktop app windows run its default export; the desktop app's main process runs its `main` export. Fails with not found when no active plugin has the id or the plugin exports no `./gui-experimental`.",
+        }),
+      ),
   )
-  .annotateMerge(OpenApi.annotations({ title: "plugin", description: "Plugin invoke routes." }))
+  .add(
+    HttpApiEndpoint.post("plugin.check", "/api/plugin/check", {
+      query: LocationQuery,
+      payload: Schema.Struct({ target: Schema.String.pipe(Schema.optional) }),
+      success: Location.response(Schema.Array(Plugin.Info)),
+      error: InvalidRequestError,
+    })
+      .annotateMerge(locationQueryOpenApi)
+      .annotateMerge(
+        OpenApi.annotations({
+          identifier: "plugin.check",
+          summary: "Check plugin updates",
+          description: "Check one or all package plugins for available updates.",
+        }),
+      ),
+  )
+  .add(
+    HttpApiEndpoint.post("plugin.update", "/api/plugin/update", {
+      query: LocationQuery,
+      payload: Schema.Struct({ targets: Schema.Array(Schema.String) }),
+      success: HttpApiSchema.NoContent,
+      error: [InvalidRequestError, ServiceUnavailableError],
+    })
+      .annotateMerge(locationQueryOpenApi)
+      .annotateMerge(
+        OpenApi.annotations({
+          identifier: "plugin.update",
+          summary: "Update plugins",
+          description:
+            "Update package plugins concurrently and notify active locations to reload them. Responds once every update has finished; fails when any update fails.",
+        }),
+      ),
+  )
+  .annotateMerge(
+    OpenApi.annotations({
+      title: "plugin",
+      description: "Experimental plugin routes.",
+    }),
+  )
